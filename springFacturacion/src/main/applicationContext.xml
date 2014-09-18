@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+<!-- 	Panel principal -->
+
+	<bean id="main" class="main.SpringFacturacion">
+		<property name="enterSandMan" ref="enterSandMan"></property>
+	</bean> 
+	
+	<!-- 	Clases models - capa persistencia -->
+	
+	<bean id="albaranes" class="beansModels.Albaranes" scope="prototype"></bean>
+	<bean id="clientes" class="beansModels.Clientes" scope="prototype"></bean>
+	<bean id="codigosFacturacion" class="beansModels.CodigosFacturacion" scope="prototype"></bean>
+	<bean id="datosEmpresa" class="beansModels.DatosEmpresa" scope="prototype"></bean>
+	<bean id="datosFactura" class="beansModels.DatosFactura" scope="prototype"></bean>
+	<bean id="facturas" class="beansModels.Facturas" scope="prototype"></bean>
+	<bean id="formaPago" class="beansModels.FormaPago" scope="prototype"></bean>
+	<bean id="tiposIva" class="beansModels.TiposIva" scope="prototype"></bean>
+	<bean id="tiposIrpf" class="beansModels.TiposIrpf"></bean>
+	
+	<!-- 	Clases list - capa listado -->
+	
+	<bean id="listados" class="beansList.ListadosPdf" scope="prototype"></bean>
+	<bean id="listadosCSV" class="beansList.ListadosCsv" scope="prototype">
+		<property name="recording" ref="fileRecorder"></property>
+	</bean>
+	
+	<!-- 	Clases controls - capa negocio -->
+	
+	<bean id="ivaBean" class="beansControls.TiposIvaBean"></bean>
+	<bean id="facturasBean" class="beansControls.FacturasBean">
+		<property name="factura" ref="facturas"></property>
+	</bean>
+	<bean id="empresa" class="beansControls.EmpresaBean" ></bean>
+	<bean id="clockAndDate" class="beansControls.ClockAndDate"></bean>
+	<bean id="clientesBean" class="beansControls.ClientesBean"></bean>
+	<bean id="pagosBean" class="beansControls.PagosBean"></bean>
+	<bean id="fileRecorder" class="beansControls.FileRecorder" ></bean>
+	<bean id="irpfBean" class="beansControls.TiposIrpfBean"></bean>
+	<bean id="albaranesBean" class="beansControls.AlbaranesBean">
+		<property name="albaran" ref="albaranes"></property>
+	</bean>
+	
+	
+	<!-- 	Clases views - capa vista -->
+		
+		<!-- 	EnterSandMan es la clase principal desde la cual cuelgan -->
+		<!-- 	4 clases correspondientes a las pestañas de operaciones  -->
+	<bean id="enterSandMan" class="beansViews.EnterSandMan">
+		<!-- 	datos generales -->
+ 		<property name="thisEmpresa" ref="empresa"></property>		
+		<property name="time" ref="clockAndDate"></property>
+		<!-- 	pantallas del menu de pestañas principal -->
+ 		<property name="mCliente" ref="marcoClientes"></property>
+ 		<property name="factura" ref="marcoFacturas"></property>
+ 		<property name="albaranes" ref="marcoAlbaranes"></property>
+ 		<property name="admin" ref="marcoAdministracion"></property>
+ 		<property name="irpfBean" ref="irpfBean"></property>
+	</bean>
+	
+		<!-- 	Zona marcoAdministracion y sus clases hijas -->
+	<bean id="marcoAdministracion" class="beansViews.MarcoAdministracion">
+		<property name="panelCompany" ref="panelEmpresas"></property>
+		<property name="panelIva" ref="panelIvas"></property>
+		<property name="panelPago" ref="panelPagos"></property>
+		<property name="panelIrpf" ref="panelIrpf"></property>
+	</bean>	
+	
+		<!-- 	Zona marcoAlbaranes y sus clases hijas -->
+	<bean id="marcoAlbaranes" class="beansViews.MarcoAlbaranes">
+		<property name="panelCreating" ref="panelCreateDelivery"></property>
+		<property name="panelModifying" ref="panelModifyDelivery"></property>
+		<property name="panelDeleting" ref="panelDeleteDelivery"></property>
+		<property name="panelPrinting" ref="panelPrintDelivery"></property>
+		<property name="panelPdf" ref="PanelPdfDelivery"></property>
+	</bean>
+		
+
+	
+			<!-- 	Zona marcoClientes y sus clases hijas -->
+	<bean id="marcoClientes" class="beansViews.MarcoClientes">
+<!-- 	<constructor-arg name="mainFrame" type="javax.swing.JFrame" ref="enterSandMan"></constructor-arg>		 -->
+		<property name="panelCreating" ref="panelCreateCustomer"></property>
+		<property name="panelModifying" ref="panelModifyCustomer"></property>
+		<property name="panelDeleting" ref="panelDeleteCustomer"></property>
+		<property name="panelPrinting" ref="panelPrintCustomer"></property>
+<!-- 		<property name="reinicia" ref="enterSandMan"></property> -->
+	</bean>
+	
+		<!-- 	Zona marcoFacturas y sus clases hijas -->
+	<bean id="marcoFacturas" class="beansViews.MarcoFacturas" >
+		<property name="panelCreating" ref="panelCreateInvoice"></property>
+		<property name="panelModifying" ref="panelModifyInvoice"></property>
+		<property name="panelDeleting" ref="panelEraseInvoice"></property>
+		<property name="panelPrinting" ref="panelPrintListInvoice"></property>
+		<property name="panelPrintInvoice" ref="panelInvoicePdf"></property>
+		<property name="panelPrintIva" ref="panelInvoicesIva"></property>
+	</bean>
+	
+		<!-- 	Zona paneles de marcoEmpresa -->
+	<bean id="panelEmpresas" class="beansViews.PanelAdminEmpresas">
+		<property name="empresa" ref="empresa"></property>
+		<property name="newEmpresa" ref="datosEmpresa"></property>
+		<property name="reinicia" ref="enterSandMan"></property>
+	</bean>
+	
+	<bean id="panelIvas" class="beansViews.PanelAdminIvas">
+		<property name="newIva" ref="tiposIva"></property>
+		<property name="ivas" ref="ivaBean"></property>
+		<property name="reinicia" ref="enterSandMan"></property>
+	</bean>
+	
+	<bean id="panelPagos" class="beansViews.PanelAdminPagos">
+		<property name="newPago" ref="formaPago"></property>
+		<property name="pagos" ref="pagosBean"></property>
+		<property name="reinicia" ref="enterSandMan"></property>
+	</bean>
+	
+	<bean id="panelIrpf" class="beansViews.PanelAdminIrpf">
+		<property name="tiposIrpf" ref="tiposIrpf"></property>
+		<property name="tiposIrpfBean" ref="irpfBean"></property>
+		<property name="reinicia" ref="enterSandMan"></property>
+	</bean>
+	
+		<!-- 	Zona paneles de marcoClientes -->
+	<bean id="panelCreateCustomer" class="beansViews.PanelCustomersCreating">
+		<property name="customers" ref="clientesBean"></property>
+		<property name="thisCustomer" ref="clientes"></property>
+		<property name="pagosCust" ref="pagosBean"></property>
+		<property name="reinicia" ref="enterSandMan"></property>
+	</bean>
+	
+	<bean id="panelModifyCustomer" class="beansViews.PanelCustomersModifying">
+		<property name="customers" ref="clientesBean"></property>
+		<property name="thisCustomer" ref="clientes"></property>
+		<property name="pagosCust" ref="pagosBean"></property>
+		<property name="reinicia" ref="enterSandMan"></property>
+	</bean>
+	
+	<bean id="panelDeleteCustomer" class="beansViews.PanelCustomersDeleting">
+		<property name="facturas" ref="facturasBean"></property>
+		<property name="customers" ref="clientesBean"></property>
+		<property name="reinicia" ref="enterSandMan"></property>	
+	</bean>
+	
+	<bean id="panelPrintCustomer" class="beansViews.PanelCustomersPrinting">
+		<property name="dataList" ref="listados"></property>
+		<property name="recording" ref="fileRecorder"></property>
+		<property name="today" ref="clockAndDate"></property>
+		<property name="facturas" ref="facturasBean"></property>
+		<property name="customers" ref="clientesBean"></property>
+	</bean>
+	
+		<!-- 	Zona paneles de marcoAlbaranes -->
+	<bean id="panelCreateDelivery" class="beansViews.PanelDeliveryCreating">
+		<property name="dateEsp" ref="clockAndDate"></property>
+		<property name="ivas" ref="ivaBean"></property>	
+		<property name="clienteFac" ref="clientesBean"></property>	
+		<property name="albaranes" ref="albaranesBean"></property>	
+		<property name="datosF" ref="albaranes"></property>		
+		<property name="reinicia" ref="enterSandMan"></property>	
+		<property name="dataList" ref="listados"></property>
+	</bean>	
+	
+	<bean id="panelModifyDelivery" class="beansViews.PanelDeliveryModifying">
+		<property name="dateEsp" ref="clockAndDate"></property>
+		<property name="ivas" ref="ivaBean"></property>	
+		<property name="clienteFac" ref="clientesBean"></property>	
+		<property name="albaranes" ref="albaranesBean"></property>
+		<property name="datosF" ref="albaranes"></property>	
+		<property name="reinicia" ref="enterSandMan"></property>	
+		<property name="dataList" ref="listados"></property>
+	</bean>		
+	
+	<bean id="panelDeleteDelivery" class="beansViews.PanelDeliveryDeleting">
+		<property name="dateEsp" ref="clockAndDate"></property>
+		<property name="clienteFac" ref="clientesBean"></property>	
+		<property name="albaranes" ref="albaranesBean"></property>	
+		<property name="reinicia" ref="enterSandMan"></property>	
+	</bean>	
+	
+	<bean id="panelPrintDelivery" class="beansViews.PanelDeliveryPrinting">
+		<property name="dateEsp" ref="clockAndDate"></property>
+		<property name="clienteFac" ref="clientesBean"></property>	
+		<property name="albaranes" ref="albaranesBean"></property>		
+		<property name="dataList" ref="listados"></property>
+		<property name="dataListCsv" ref="listadosCSV"></property>
+	</bean>	
+	
+	<bean id="PanelPdfDelivery" class="beansViews.PanelDeliveryPDF">
+		<property name="albaran" ref="albaranes"></property>	
+		<property name="albaranes" ref="albaranesBean"></property>	
+		<property name="dataList" ref="listados"></property>
+		<property name="dataListCsv" ref="listadosCSV"></property>
+		<property name="clientes" ref="clientesBean"></property>	
+	</bean>
+	
+
+	
+		<!-- 	Zona paneles de marcoFacturas -->
+	<bean id="panelCreateInvoice" class="beansViews.PanelInvoicesCreating">
+		<property name="dateEsp" ref="clockAndDate"></property>
+		<property name="ivas" ref="ivaBean"></property>	
+		<property name="clienteFac" ref="clientesBean"></property>	
+		<property name="factura" ref="facturas"></property>	
+		<property name="facturador" ref="facturasBean"></property>	
+		<property name="dataList" ref="listados"></property>	
+		<property name="albaranes" ref="albaranesBean"></property>	
+		<property name="formaPago" ref="pagosBean"></property>		
+	</bean>
+	<bean id="panelPrintListInvoice" class="beansViews.PanelInvoicesPrinting">	
+		<property name="dateEsp" ref="clockAndDate"></property>
+		<property name="clienteFac" ref="clientesBean"></property>	
+		<property name="facturador" ref="facturasBean"></property>	
+		<property name="dataList" ref="listados"></property>	
+		<property name="dataListCsv" ref="listadosCSV"></property>	
+	</bean>
+	<bean id="panelModifyInvoice" class="beansViews.PanelInvoicesModifying">
+		<property name="dateEsp" ref="clockAndDate"></property>
+		<property name="ivas" ref="ivaBean"></property>	
+		<property name="clienteFac" ref="clientesBean"></property>	
+		<property name="factura" ref="facturas"></property>	
+		<property name="facturador" ref="facturasBean"></property>	
+		<property name="dataList" ref="listados"></property>	
+		<property name="formaPago" ref="pagosBean"></property>	
+		<property name="albaranes" ref="albaranesBean"></property>
+	</bean>
+	<bean id="panelEraseInvoice" class="beansViews.PanelInvoicesDeleting">
+		<property name="facturador" ref="facturasBean"></property>
+		<property name="dateEsp" ref="clockAndDate"></property>
+		<property name="clienteFac" ref="clientesBean"></property>
+		<property name="albaranes" ref="albaranesBean"></property>
+	</bean>
+	<bean id="panelInvoicePdf" class="beansViews.PanelInvoicePDF">
+		<property name="factura" ref="facturas"></property>	
+		<property name="facturador" ref="facturasBean"></property>	
+		<property name="dataList" ref="listados"></property>	
+		<property name="dataListCsv" ref="listadosCSV"></property>	
+	</bean>
+	<bean id="panelInvoicesIva" class="beansViews.PanelInvoicesIva">
+		<property name="facturador" ref="facturasBean"></property>
+		<property name="dateEsp" ref="clockAndDate"></property>	
+		<property name="dataList" ref="listados"></property>	
+		<property name="dataListCsv" ref="listadosCSV"></property>
+	</bean>	
+	
+</beans>
