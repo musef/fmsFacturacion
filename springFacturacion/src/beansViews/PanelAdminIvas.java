@@ -122,7 +122,9 @@ public class PanelAdminIvas implements ActionListener, ItemListener {
 		selIva=new JComboBox<String>();
 		selIva.addItem("Seleccione...");
 		//ivas=new TiposIvaBean();
-		allIva=ivas.getListIva();
+		if ((allIva=ivas.getListIva())==null) {
+			allIva.add(new String[7]);
+		}
 		for (String[] data: allIva) {
 			selIva.addItem(data[2]);
 		}
@@ -387,7 +389,7 @@ public class PanelAdminIvas implements ActionListener, ItemListener {
 			
 			newIva.setClassIva(claseIva.getSelectedIndex());
 			newIva.setAccIva("");
-			if (ivas.CreateIva(newIva)) {
+			if (ivas.createIva(newIva)) {
 				// muestra mensaje y actualiza las pestañas
 				JOptionPane.showMessageDialog(mainFrame, "El iva ha sido grabado correctamente", "Grabación de IVA", JOptionPane.INFORMATION_MESSAGE);
 				reinicia.reinicia(1,2);

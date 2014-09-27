@@ -118,7 +118,9 @@ public class PanelAdminPagos implements ActionListener, ItemListener {
 		selPago=new JComboBox<String>();
 		selPago.addItem("Seleccione...");
 		//pagos=new PagosBean();
-		allPagos=pagos.getListPago();
+		if ((allPagos=pagos.getListPago())==null) {
+			allPagos.add(new String[5]);
+		}
 		for (String[] data: allPagos) {
 			selPago.addItem(data[1]);
 		}
@@ -353,7 +355,7 @@ public class PanelAdminPagos implements ActionListener, ItemListener {
 			newPago.setDiasPago(diasPago.getText().trim());
 			newPago.setFechaPago(fechaPago.getText().trim());
 
-			if (pagos.CreatePago(newPago)) {
+			if (pagos.createPago(newPago)) {
 				// muestra mensaje y actualiza las pestañas
 				JOptionPane.showMessageDialog(mainFrame, "La forma de pago ha sido grabada correctamente", "Grabación de Formas de pago", JOptionPane.INFORMATION_MESSAGE);
 				reinicia.reinicia(1,3);

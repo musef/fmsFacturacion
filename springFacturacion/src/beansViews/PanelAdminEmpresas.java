@@ -65,6 +65,7 @@ public class PanelAdminEmpresas implements ActionListener {
 	private EnterSandMan reinicia;
 	
 	private List<String[]> allEmpresas;
+	private final int NUMBERCOMPANY=0;
 	private String idEmpresa;
 	
 	
@@ -119,8 +120,10 @@ public class PanelAdminEmpresas implements ActionListener {
 		marcoAux1.setMaximumSize(new Dimension(650,410));
 		
 		//empresa=new EmpresaBean();
-		allEmpresas=empresa.getListEmpresa();
-		int numberCompany=0;
+		if ((allEmpresas=empresa.getListEmpresa())==null) {
+			allEmpresas.add(new String[11]);
+		}
+		
 
 		// titulo
 		JLabel title=new JLabel("DATOS DE EMPRESA");
@@ -129,62 +132,62 @@ public class PanelAdminEmpresas implements ActionListener {
 		JLabel name=new JLabel("Nombre de empresa");
 		name.setFont(font2);
 		name.setForeground(colorL);
-		nameF=new JTextField(allEmpresas.get(numberCompany)[1]);
+		nameF=new JTextField(allEmpresas.get(NUMBERCOMPANY)[1]);
 		nameF.setToolTipText("OBLIGATORIO: Entre 3 y 50 caracteres");
 		
 		JLabel name2=new JLabel("Nombre comercial ");
 		name2.setFont(font2);
 		name2.setForeground(colorL);
-		nameF2=new JTextField(allEmpresas.get(numberCompany)[2]);
+		nameF2=new JTextField(allEmpresas.get(NUMBERCOMPANY)[2]);
 		nameF2.setToolTipText("máximo 50 caracteres");
 		
 		JLabel address=new JLabel("Dirección");
 		address.setFont(font2);
 		address.setForeground(colorL);
-		addressF=new JTextField(allEmpresas.get(numberCompany)[3]);
+		addressF=new JTextField(allEmpresas.get(NUMBERCOMPANY)[3]);
 		addressF.setToolTipText("OBLIGATORIO: Entre 3 y 50 caracteres");
 		
 		JLabel code=new JLabel("Código postal");
 		code.setFont(font2);
 		code.setForeground(colorL);
-		codeF=new JTextField(allEmpresas.get(numberCompany)[4]);
+		codeF=new JTextField(allEmpresas.get(NUMBERCOMPANY)[4]);
 		codeF.setToolTipText("OBLIGATORIO: 5 caracteres");
 		
 		JLabel city=new JLabel("Localidad");
 		city.setFont(font2);
 		city.setForeground(colorL);
-		cityF=new JTextField(allEmpresas.get(numberCompany)[5]);
+		cityF=new JTextField(allEmpresas.get(NUMBERCOMPANY)[5]);
 		cityF.setToolTipText("OBLIGATORIO: Entre 3 y 50 caracteres");
 		
 		JLabel nif=new JLabel("N.I.F.");
 		nif.setFont(font2);
 		nif.setForeground(colorL);
-		nifF=new JTextField(allEmpresas.get(numberCompany)[6]);
+		nifF=new JTextField(allEmpresas.get(NUMBERCOMPANY)[6]);
 		nifF.setToolTipText("OBLIGATORIO: 9 caracteres");
 
 		JLabel texto=new JLabel("Texto");
 		texto.setFont(font2);
 		texto.setForeground(colorL);
-		textoF=new JTextField(allEmpresas.get(numberCompany)[7]);
+		textoF=new JTextField(allEmpresas.get(NUMBERCOMPANY)[7]);
 		textoF.setToolTipText("máximo 200 caracteres");
 		
 		JLabel serie=new JLabel("Serie facturación");
 		serie.setFont(font2);
 		serie.setForeground(colorL);
-		serieF=new JTextField(allEmpresas.get(numberCompany)[8]);
+		serieF=new JTextField(allEmpresas.get(NUMBERCOMPANY)[8]);
 		serieF.setToolTipText("máximo 8 caracteres");
 		
 		JLabel numero=new JLabel("Último nº factura");
 		numero.setFont(font2);
 		numero.setForeground(colorL);
-		numeroF=new JTextField(allEmpresas.get(numberCompany)[9]);
+		numeroF=new JTextField(allEmpresas.get(NUMBERCOMPANY)[9]);
 		numeroF.setToolTipText("Entre 0 y 999999");
 		
 		JLabel retenc=new JLabel("Retención");
 		retenc.setFont(font2);
 		retenc.setForeground(colorL);
 		retencF=new JCheckBox();
-		if (allEmpresas.get(numberCompany)[10].equals("1")) {
+		if (allEmpresas.get(NUMBERCOMPANY)[10].equals("1")) {
 			retencF.setSelected(true);
 		}
 		retencF.setToolTipText("Marque la casilla si sus facturas llevan retención");
@@ -491,7 +494,7 @@ public class PanelAdminEmpresas implements ActionListener {
 				if (allEmpresas.get(companySelected)[0]!=null) {
 					if (allEmpresas.get(companySelected)[0].equals("")) {
 						// Es creacion de empresa
-						if (empresa.CreateEmpresa(newEmpresa)) {
+						if (empresa.createEmpresa(newEmpresa)) {
 							// muestra mensaje y actualiza las pestañas
 							JOptionPane.showMessageDialog(mainFrame, "Los datos de empresa han sido grabados correctamente", "Grabación de datos Empresa", JOptionPane.INFORMATION_MESSAGE);
 							reinicia.reinicia(1,1);

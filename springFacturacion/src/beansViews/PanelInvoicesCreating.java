@@ -305,7 +305,11 @@ public class PanelInvoicesCreating extends UtilsFacturacion implements ActionLis
 		
 		ivaOp=new JComboBox<String>();
 		//ivas=new TiposIvaBean();
-		List<String[]> listIv=ivas.getListIva();
+		List<String[]> listIv;
+		if ((listIv=ivas.getListIva())==null) {
+			listIv=new ArrayList<String[]>();
+			//listIv.add(new String[7]);
+		}
 		for (String[] a:listIv) {
 			if (!(a[1].equals("0") || a[4].equals("2"))) {
 				// si el iva no esta inactivo ni es de compras lo añade
@@ -1151,6 +1155,9 @@ public class PanelInvoicesCreating extends UtilsFacturacion implements ActionLis
 				datosF.setDiaPago("");
 				if (paiment!=null && !paiment.isEmpty()) {
 					String datosPago[]=formaPago.getPago(paiment);
+					if (datosPago==null) {
+						datosPago=new String[5];
+					}
 					datosF.setFormaPago(datosPago[2]);
 					if (!datosPago[3].isEmpty() && !datosPago[3].equals("0")) {
 						int diaPago=0;

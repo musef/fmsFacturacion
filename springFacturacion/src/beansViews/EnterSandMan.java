@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -560,7 +561,10 @@ public class EnterSandMan extends JFrame implements ActionListener {
 		
 		// recupera la informacion de empresa (por si hubo cambios en panel empresa)
 		SpringFacturacion.nameUsuario="Administrador";
-		String empresaSel[]=thisEmpresa.getListEmpresa().get(0);		
+		String empresaSel[]=new String[11];
+		if (thisEmpresa.getListEmpresa()!=null) {
+			empresaSel=thisEmpresa.getListEmpresa().get(0);
+		}				
 		SpringFacturacion.serialInvoices=empresaSel[8];
 		SpringFacturacion.nameCompany=empresaSel[1];
 		SpringFacturacion.addressCompany=empresaSel[3];
@@ -570,7 +574,10 @@ public class EnterSandMan extends JFrame implements ActionListener {
 		SpringFacturacion.idCompany=empresaSel[0];
 		// si la empresa tiene retencion por irpf lo busca
 		if (empresaSel[10].equals("1")) {
-			List <String[]>irfpList=irpfBean.getListIrpf();
+			List <String[]>irfpList;
+			if ((irfpList=irpfBean.getListIrpf())==null) {
+				irfpList=new ArrayList<String[]>();
+			}
 			for (String[] a:irfpList) {
 				// si el irpf es activo y pertenece a ventas 
 				if (a[1].equals("1") && a[4].equals("1")) {
@@ -632,7 +639,10 @@ public class EnterSandMan extends JFrame implements ActionListener {
 				
 				SpringFacturacion.nameUsuario="Administrador";
 
-				String empresaSel[]=thisEmpresa.getListEmpresa().get(0);
+				String empresaSel[]=new String[11];
+				if (thisEmpresa.getListEmpresa()!=null) {
+					empresaSel=thisEmpresa.getListEmpresa().get(0);
+				}
 				
 				SpringFacturacion.serialInvoices=empresaSel[8];
 				SpringFacturacion.nameCompany=empresaSel[1];
@@ -643,7 +653,10 @@ public class EnterSandMan extends JFrame implements ActionListener {
 				SpringFacturacion.idCompany=empresaSel[0];
 				// si la empresa tiene retencion por irpf lo busca
 				if (empresaSel[10].equals("1")) {
-					List <String[]>irfpList=irpfBean.getListIrpf();
+					List <String[]>irfpList;
+					if ((irfpList=irpfBean.getListIrpf())==null) {
+						irfpList=new ArrayList<String[]>();
+					}
 					for (String[] a:irfpList) {
 						// si el irpf es activo y pertenece a ventas 
 						if (a[1].equals("1") && a[4].equals("1")) {
@@ -672,7 +685,7 @@ public class EnterSandMan extends JFrame implements ActionListener {
 
 			} else if (JOptionPane.showConfirmDialog(mainFrame, "El usuario-contraseña facilitado es incorrecto.\n" +
 					"¿Desea intentarlo de nuevo?", "Error en identificación", JOptionPane.YES_NO_OPTION)!=0) {
-				thisEmpresa.modifyInvoiceNumber(SpringFacturacion.idCompany, SpringFacturacion.lastInvoiceNumber);
+				thisEmpresa.modifyLastInvoiceNumber(SpringFacturacion.idCompany, SpringFacturacion.lastInvoiceNumber);
 				System.exit(0);
 			}
 				
@@ -700,7 +713,7 @@ public class EnterSandMan extends JFrame implements ActionListener {
 		
 		if (source.equals("Desconectar")) {
 			if (JOptionPane.showConfirmDialog(mainFrame, "¿Desea abandonar la aplicación?", "Salida de la aplicación", JOptionPane.YES_NO_OPTION)==0) {
-				thisEmpresa.modifyInvoiceNumber(SpringFacturacion.idCompany, SpringFacturacion.lastInvoiceNumber);
+				thisEmpresa.modifyLastInvoiceNumber(SpringFacturacion.idCompany, SpringFacturacion.lastInvoiceNumber);
 				System.exit(0);
 			}		
 		} 

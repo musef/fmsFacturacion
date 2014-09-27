@@ -373,94 +373,107 @@ public class PanelDeliveryPrinting implements ActionListener {
 		// CREAMOS UNA VISUALIZACION DE 25 LINEAS
 		JPanel marcoList=new JPanel();
 		
-		int listRows=listDeliveriesToPrinting.size()+5;
-		if (listRows<25) {
-			listRows=25;
-		}
-		
-		GridLayout layout=new GridLayout(listRows,6);
-		marcoList.setLayout(layout);
-
-		marcoList.add(new JLabel("CLIENTE"));
-		marcoList.add(new JLabel("ALBARÁN"));
-		marcoList.add(new JLabel("   FECHA"));
-		marcoList.add(new JLabel("         BASE"));
-		marcoList.add(new JLabel("         TOTAL"));
-		marcoList.add(new JLabel("  ESTADO"));
-
-
-		int elem=0;
-		double basTotal=0;
-		double impTotal=0;
-		
-		for (String a[]:listDeliveriesToPrinting) {		
-
-			marcoList.add(labelFont(a[2]));
-			marcoList.add(labelFont(a[3]));
-			marcoList.add(labelFont(a[4].substring(8)+a[4].substring(4,8)+a[4].substring(0,4)));
-			
-			double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
-			double tot=(double)Double.parseDouble(a[33]);
-			basTotal=basTotal+bas;
-			impTotal=impTotal+tot;
-			
-			String sp0=formatoDecimal.format(bas);
-			for (int n=sp0.length();n<15;n++) {
-				sp0=" "+sp0;
-			}
-			marcoList.add(labelFont(sp0));	
-			String sp1=formatoDecimal.format(tot);
-			for (int n=sp1.length();n<15;n++) {
-				sp1=" "+sp1;
-			}
-			marcoList.add(labelFont(sp1));
-			if (a[1].isEmpty()) {
-				marcoList.add(labelFont("PENDIENTE"));
-			} else {
-				marcoList.add(labelFont("FACTURADO"));
+		if (listDeliveriesToPrinting!=null && !listDeliveriesToPrinting.isEmpty()) {
+			int listRows=listDeliveriesToPrinting.size()+5;
+			if (listRows<25) {
+				listRows=25;
 			}
 			
-			elem++;					
+			GridLayout layout=new GridLayout(listRows,6);
+			marcoList.setLayout(layout);
 
+			marcoList.add(new JLabel("CLIENTE"));
+			marcoList.add(new JLabel("ALBARÁN"));
+			marcoList.add(new JLabel("   FECHA"));
+			marcoList.add(new JLabel("         BASE"));
+			marcoList.add(new JLabel("         TOTAL"));
+			marcoList.add(new JLabel("  ESTADO"));
+
+
+			int elem=0;
+			double basTotal=0;
+			double impTotal=0;
+			
+			for (String a[]:listDeliveriesToPrinting) {		
+
+				marcoList.add(labelFont(a[2]));
+				marcoList.add(labelFont(a[3]));
+				marcoList.add(labelFont(a[4].substring(8)+a[4].substring(4,8)+a[4].substring(0,4)));
+				
+				double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
+				double tot=(double)Double.parseDouble(a[33]);
+				basTotal=basTotal+bas;
+				impTotal=impTotal+tot;
+				
+				String sp0=formatoDecimal.format(bas);
+				for (int n=sp0.length();n<15;n++) {
+					sp0=" "+sp0;
+				}
+				marcoList.add(labelFont(sp0));	
+				String sp1=formatoDecimal.format(tot);
+				for (int n=sp1.length();n<15;n++) {
+					sp1=" "+sp1;
+				}
+				marcoList.add(labelFont(sp1));
+				if (a[1].isEmpty()) {
+					marcoList.add(labelFont("PENDIENTE"));
+				} else {
+					marcoList.add(labelFont("FACTURADO"));
+				}
+				
+				elem++;					
+
+			}
+					// rellenamos el cuerpo con lineas hasta el minimo de 25, si es que no hay suficientes
+			
+			for (int j=elem;j<listRows-5;j++) {
+				marcoList.add(new JLabel(""));
+				marcoList.add(new JLabel(""));
+				marcoList.add(new JLabel(""));
+				marcoList.add(new JLabel(""));
+				marcoList.add(new JLabel(""));
+				marcoList.add(new JLabel(""));
+			}
+			
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(""));
+			
+			marcoList.add(new JLabel("TOTALES"));
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel("BASES"));
+			marcoList.add(new JLabel("IMPORTES"));
+			marcoList.add(new JLabel(""));
+			
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(formatoDecimal.format(basTotal)));
+			marcoList.add(new JLabel(formatoDecimal.format(impTotal)));
+			marcoList.add(new JLabel(""));
+			
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(""));
+			marcoList.add(new JLabel(""));
+
+		} else {
+			
+			GridLayout layout=new GridLayout(25,3);
+			marcoList.setLayout(layout);
+
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel("NO EXISTEN DATOS EN LA SELECCION"));
+			marcoList.add(new JLabel(" "));
+			
 		}
-				// rellenamos el cuerpo con lineas hasta el minimo de 25, si es que no hay suficientes
 		
-		for (int j=elem;j<listRows-5;j++) {
-			marcoList.add(new JLabel(""));
-			marcoList.add(new JLabel(""));
-			marcoList.add(new JLabel(""));
-			marcoList.add(new JLabel(""));
-			marcoList.add(new JLabel(""));
-			marcoList.add(new JLabel(""));
-		}
-		
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(""));
-		
-		marcoList.add(new JLabel("TOTALES"));
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel("BASES"));
-		marcoList.add(new JLabel("IMPORTES"));
-		marcoList.add(new JLabel(""));
-		
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(formatoDecimal.format(basTotal)));
-		marcoList.add(new JLabel(formatoDecimal.format(impTotal)));
-		marcoList.add(new JLabel(""));
-		
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(""));
-		marcoList.add(new JLabel(""));
 		
 		// lo ponemos en un scrollPane por si excede la pantalla
 		JScrollPane scroll=new JScrollPane(marcoList);
@@ -501,8 +514,6 @@ public class PanelDeliveryPrinting implements ActionListener {
 		panelButtons.add(new JLabel(""));
 		panelButtons.add(new JLabel(""));
 		
-		
-
 		JLabel foo=new JLabel(foot);
 		foo.setFont(font4);
 		marcoList.setFont(font3);
@@ -522,10 +533,6 @@ public class PanelDeliveryPrinting implements ActionListener {
 	
 	
 	
-
-	
-	
-	
 	/**
 	 * Este metodo genera un fichero PDF.
 	 * 
@@ -540,92 +547,104 @@ public class PanelDeliveryPrinting implements ActionListener {
 		// CUERPO
 		List<String[]> cuerpo=new ArrayList<String[]>();
 		
-		
-		int elem=0;
-		double basTotal=0;
-		double impTotal=0;
-		
-		for (String a[]:listSelectedDeliveries) {		
-			long num=(long)Long.parseLong(a[3]);
-			// se procesan los numeros dentro del rango
-			if (deliv1<=num && num<=deliv2) {
-				// si estado es cero quiere decir todos los albaranes
-				if (state==0) {
-					double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
-					double tot=(double)Double.parseDouble(a[33]);
-					basTotal=basTotal+bas;
-					impTotal=impTotal+tot;
-					
-					String data[]=new String[6];
-					data[0]=a[2];
-					data[1]=a[3];
-					data[2]=a[4];
-					data[3]=formatoDecimal.format(bas);
-					data[4]=formatoDecimal.format(tot);		
-					String texto="";
-					if (a[1].isEmpty()) {
-						texto="PENDIENTE";
+		if (listSelectedDeliveries!=null && !listSelectedDeliveries.isEmpty()) {
+			int elem=0;
+			double basTotal=0;
+			double impTotal=0;
+			
+			for (String a[]:listSelectedDeliveries) {		
+				long num=(long)Long.parseLong(a[3]);
+				// se procesan los numeros dentro del rango
+				if (deliv1<=num && num<=deliv2) {
+					// si estado es cero quiere decir todos los albaranes
+					if (state==0) {
+						double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
+						double tot=(double)Double.parseDouble(a[33]);
+						basTotal=basTotal+bas;
+						impTotal=impTotal+tot;
+						
+						String data[]=new String[6];
+						data[0]=a[2];
+						data[1]=a[3];
+						data[2]=a[4];
+						data[3]=formatoDecimal.format(bas);
+						data[4]=formatoDecimal.format(tot);		
+						String texto="";
+						if (a[1].isEmpty()) {
+							texto="PENDIENTE";
+						} else {
+							texto="FACTURADO";
+						}
+						data[5]=texto;
+						cuerpo.add(data);	
+						elem++;					
+					} else if (state==1) {
+						// estado 1 quiere decir albaranes pendientes
+						if (a[1].isEmpty()) {
+							double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
+							double tot=(double)Double.parseDouble(a[33]);
+							basTotal=basTotal+bas;
+							impTotal=impTotal+tot;
+							
+							String data[]=new String[6];
+							data[0]=a[2];
+							data[1]=a[3];
+							data[2]=a[4];
+							data[3]=formatoDecimal.format(bas);
+							data[4]=formatoDecimal.format(tot);
+							data[5]="PENDIENTE";
+							cuerpo.add(data);	
+							elem++;	
+						}
 					} else {
-						texto="FACTURADO";
-					}
-					data[5]=texto;
-					cuerpo.add(data);	
-					elem++;					
-				} else if (state==1) {
-					// estado 1 quiere decir albaranes pendientes
-					if (a[1].isEmpty()) {
-						double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
-						double tot=(double)Double.parseDouble(a[33]);
-						basTotal=basTotal+bas;
-						impTotal=impTotal+tot;
-						
-						String data[]=new String[6];
-						data[0]=a[2];
-						data[1]=a[3];
-						data[2]=a[4];
-						data[3]=formatoDecimal.format(bas);
-						data[4]=formatoDecimal.format(tot);
-						data[5]="PENDIENTE";
-						cuerpo.add(data);	
-						elem++;	
-					}
-				} else {
-					// estado 2 quiere decir albaranes facturados
-					if (!a[1].isEmpty()) {
-						double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
-						double tot=(double)Double.parseDouble(a[33]);
-						basTotal=basTotal+bas;
-						impTotal=impTotal+tot;
-						
-						String data[]=new String[6];
-						data[0]=a[2];
-						data[1]=a[3];
-						data[2]=a[4];
-						data[3]=formatoDecimal.format(bas);
-						data[4]=formatoDecimal.format(tot);
-						data[5]="FACTURADO";
-						cuerpo.add(data);	
-						elem++;		
+						// estado 2 quiere decir albaranes facturados
+						if (!a[1].isEmpty()) {
+							double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
+							double tot=(double)Double.parseDouble(a[33]);
+							basTotal=basTotal+bas;
+							impTotal=impTotal+tot;
+							
+							String data[]=new String[6];
+							data[0]=a[2];
+							data[1]=a[3];
+							data[2]=a[4];
+							data[3]=formatoDecimal.format(bas);
+							data[4]=formatoDecimal.format(tot);
+							data[5]="FACTURADO";
+							cuerpo.add(data);	
+							elem++;		
+						}
 					}
 				}
-			}
 
+			}
+			
+					// rellenamos el cuerpo con lineas hasta el minimo de 25, si es que no hay suficientes
+			
+			for (int j=elem;j<24;j++) {
+				String a[]={" "," "," "," "," "," "};
+				cuerpo.add(a);	
+			}
+			
+			// añadimos con los sumatorios
+			String resumen1[]={" "," "," ","BASES","TOTALES"," "};
+			cuerpo.add(resumen1);
+			String resumen2[]={"SUMAS... "," "," ",formatoDecimal.format(basTotal),formatoDecimal.format(impTotal)," "};
+			cuerpo.add(resumen2);
+			String resumen3[]={" "," "," "," "," "," "};
+			cuerpo.add(resumen3);
+
+		} else {
+			String data[]=new String[6];
+			data[0]="NO EXISTEN DATOS EN LA SELECCION";
+			data[1]="";
+			data[2]="";
+			data[3]="";
+			data[4]="";
+			data[5]="";
+			cuerpo.add(data);			
 		}
 		
-				// rellenamos el cuerpo con lineas hasta el minimo de 25, si es que no hay suficientes
-		
-		for (int j=elem;j<24;j++) {
-			String a[]={" "," "," "," "," "," "};
-			cuerpo.add(a);	
-		}
-		
-		// añadimos con los sumatorios
-		String resumen1[]={" "," "," ","BASES","TOTALES"," "};
-		cuerpo.add(resumen1);
-		String resumen2[]={"SUMAS... "," "," ",formatoDecimal.format(basTotal),formatoDecimal.format(impTotal)," "};
-		cuerpo.add(resumen2);
-		String resumen3[]={" "," "," "," "," "," "};
-		cuerpo.add(resumen3);
 						
 		// PIE
 		//ClockAndDate today=new ClockAndDate();
@@ -766,29 +785,30 @@ public class PanelDeliveryPrinting implements ActionListener {
 			listSelectedDeliveries=albaranes.searchAllDeliveriesCustomers(customersList);
 
 			List<String[]> listDeliveriesToPrinting=new ArrayList<String[]>();
-			
-			// seleccionamos los albaranes segun los criterios de seleccion de formulario
-			for (String a[]:listSelectedDeliveries) {		
-				long num=(long)Long.parseLong(a[3]);
-				// se procesan los numeros dentro del rango
-				if (delivery1<=num && num<=delivery2) {
-					// si estado es cero quiere decir todos los albaranes
-					if (state==0) {
-						listDeliveriesToPrinting.add(a);
-					} else if (state==1) {
-						// estado 1 quiere decir albaranes pendientes
-						if (a[1].isEmpty()) {
+			if (listSelectedDeliveries!=null) {
+				// seleccionamos los albaranes segun los criterios de seleccion de formulario
+				for (String a[]:listSelectedDeliveries) {		
+					long num=(long)Long.parseLong(a[3]);
+					// se procesan los numeros dentro del rango
+					if (delivery1<=num && num<=delivery2) {
+						// si estado es cero quiere decir todos los albaranes
+						if (state==0) {
 							listDeliveriesToPrinting.add(a);
-						}
-					} else {
-						// estado 2 quiere decir albaranes facturados
-						if (!a[1].isEmpty()) {
-							listDeliveriesToPrinting.add(a);
+						} else if (state==1) {
+							// estado 1 quiere decir albaranes pendientes
+							if (a[1].isEmpty()) {
+								listDeliveriesToPrinting.add(a);
+							}
+						} else {
+							// estado 2 quiere decir albaranes facturados
+							if (!a[1].isEmpty()) {
+								listDeliveriesToPrinting.add(a);
+							}
 						}
 					}
 				}
-
 			}
+
 					
 			showListDeliveries(listDeliveriesToPrinting);
 

@@ -15,7 +15,7 @@ public class TiposIva implements Serializable {
 	 * idIva ---------> identificador del IVA
 	 * activeIva -----> inactivo o activo (0=inactivo, 1=activo)
 	 * nameIva -------> Denominación del tipo de IVA
-	 * rateIva -------> Tipo del IVA, en porcentaje
+	 * rateIva -------> Tipo del IVA, en numero (de 0.00 a 99.99)
 	 * typeIva -------> Iva para clientes o proveedores (1 o 2)
 	 * classIva ------> Clase de iva (0=exento, 1=superreducido, 2=reducido, 3=general)
 	 * accIva --------> Cuenta contable para IVA

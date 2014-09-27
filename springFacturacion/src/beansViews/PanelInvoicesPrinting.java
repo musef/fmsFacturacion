@@ -7,7 +7,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent; 
@@ -164,7 +163,9 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 		firstInvoice=new JComboBox<String>();
 		firstInvoice.addItem("Factura inicial... ");
 		listInvoices=facturador.searchExtractInvoicesByCustomers(listSelectedCustomers);
-		listSelectedInvoices=facturador.searchExtractInvoices();
+		if ((listSelectedInvoices=facturador.searchExtractInvoices())==null) {
+			listSelectedInvoices=new ArrayList<String[]>();
+		}
 		for (String[] list:listInvoices) {
 			firstInvoice.addItem(list[1]);
 		}
@@ -176,9 +177,7 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 			lastInvoice.addItem(list[1]);
 		}
 		lastInvoice.setSelectedIndex(lInv);
-		
-		
-		
+	
 		
 		// titulo
 		JLabel title=new JLabel("LISTADO DE FACTURAS");
@@ -264,8 +263,6 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 		marcoAux1.add(inv2);
 		marcoAux1.add(lastInvoice);
 		marcoAux1.add(new JLabel(" "));
-		
-
 			
 		marcoAux1.add(new JLabel(" "));
 		marcoAux1.add(new JLabel(" "));
@@ -504,8 +501,6 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 		panelButtons.add(new JLabel(""));
 		panelButtons.add(new JLabel(""));
 		
-		
-
 		JLabel foo=new JLabel(foot);
 		foo.setFont(font4);
 		marcoList.setFont(font3);

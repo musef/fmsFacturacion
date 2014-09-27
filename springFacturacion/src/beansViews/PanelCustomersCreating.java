@@ -150,13 +150,11 @@ public class PanelCustomersCreating implements ActionListener, ItemListener {
 		nif.setForeground(colorL);
 		nifF=new JTextField("");
 		nifF.setToolTipText("OBLIGATORIO: 9 caracteres");
-		/*
-		JLabel pay=new JLabel("Forma de pago ");
-		pay.setFont(font2);
-		pay.setForeground(colorL);
-		*/
+
 		//pagos=new PagosBean();
-		custPagos=pagosCust.getListPago();
+		if ((custPagos=pagosCust.getListPago())==null) {
+			custPagos.add(new String[5]);
+		}
 		getPay=new JComboBox<String>();
 		getPay.addItem("Seleccione pago");
 		for (String[]n:custPagos) {
@@ -381,6 +379,11 @@ public class PanelCustomersCreating implements ActionListener, ItemListener {
 				taxAddressF.setBackground(ERRORFORM);
 				result=false;
 			}
+			
+			if (getPay.getSelectedIndex()==0) {
+				payF.setBackground(ERRORFORM);
+				result=false;
+			}
 						
 			
 	
@@ -498,7 +501,7 @@ public class PanelCustomersCreating implements ActionListener, ItemListener {
 					String keyCust=nameF.getText().trim().substring(0, 3)+String.valueOf(numAleatorio2)+nifF.getText().trim().substring(0, 3);
 					thisCustomer.setCustomerKey(keyCust);
 					
-					if (customers.CreateCustomer(thisCustomer)) {
+					if (customers.createCustomer(thisCustomer)) {
 						JOptionPane.showMessageDialog(mainFrame, "El cliente ha sido grabado correctamente", "Grabación de clientes", JOptionPane.INFORMATION_MESSAGE);
 						reinicia.reinicia(2, 1);
 					} else {

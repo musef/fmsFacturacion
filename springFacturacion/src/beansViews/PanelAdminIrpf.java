@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -116,7 +117,9 @@ public class PanelAdminIrpf implements ActionListener, ItemListener {
 		selIrpf=new JComboBox<String>();
 		selIrpf.addItem("Seleccione...");
 		//irpf=new TiposIrpfBean();
-		allIrpf=irpf.getListIrpf();
+		if ((allIrpf=irpf.getListIrpf())==null) {
+			allIrpf=new ArrayList<String[]>();
+		}
 		for (String[] data: allIrpf) {
 			selIrpf.addItem(data[2]);
 		}
@@ -348,7 +351,11 @@ public class PanelAdminIrpf implements ActionListener, ItemListener {
 		
 		if (source.equals("Grabar") && selIrpf.getSelectedIndex()==0 ) {
 			//TiposIrpf newIrpf=new TiposIrpf();
-			newIrpf.setActiveIrpf(1);
+			if (activoIrpf.isSelected()) {
+				newIrpf.setActiveIrpf(1);
+			} else {
+				newIrpf.setActiveIrpf(0);
+			}
 			newIrpf.setNameIrpf(nameIrpf.getText().trim());
 			newIrpf.setRateIrpf((double)Double.parseDouble(tipoIrpf.getText().trim()));
 			
@@ -359,7 +366,7 @@ public class PanelAdminIrpf implements ActionListener, ItemListener {
 			}
 			
 			newIrpf.setAccIrpf("");
-			if (irpf.CreateIrpf(newIrpf)) {
+			if (irpf.createIrpf(newIrpf)) {
 				// muestra mensaje y actualiza las pestañas
 				JOptionPane.showMessageDialog(mainFrame, "El irpf ha sido grabado correctamente", "Grabación de IRPF", JOptionPane.INFORMATION_MESSAGE);
 				reinicia.reinicia(1,4);
@@ -376,7 +383,12 @@ public class PanelAdminIrpf implements ActionListener, ItemListener {
 			} catch (NumberFormatException nf) {
 				newIrpf.setId(0);
 			}			
-			newIrpf.setActiveIrpf(1);
+			if (activoIrpf.isSelected()) {
+				newIrpf.setActiveIrpf(1);
+			} else {
+				newIrpf.setActiveIrpf(0);
+			}
+			
 			newIrpf.setNameIrpf(nameIrpf.getText().trim());
 			newIrpf.setRateIrpf((double)Double.parseDouble(tipoIrpf.getText().trim()));
 			

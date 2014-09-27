@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -121,8 +122,10 @@ public class PanelInvoicePDF implements ActionListener, ItemListener {
 		int fInv=0;
 		firstInvoice=new JComboBox<String>();
 		firstInvoice.addItem("Elija factura");
-		listInvoices=facturador.searchAllInvoiceNumber();
-		//listSelectedInvoices=facturador.searchExtractInvoices();
+		if ((listInvoices=facturador.searchAllInvoiceNumber())==null) {
+			listInvoices=new ArrayList<String[]>();
+		}
+		
 		for (String[] list:listInvoices) {
 			firstInvoice.addItem(list[1]);
 		}
@@ -130,7 +133,7 @@ public class PanelInvoicePDF implements ActionListener, ItemListener {
 		
 		lastInvoice=new JComboBox<String>();
 		lastInvoice.addItem("Elija factura");
-		listInvoices=facturador.searchAllInvoiceNumber();
+		//listInvoices=facturador.searchAllInvoiceNumber();
 		//listSelectedInvoices=facturador.searchExtractInvoices();
 		for (String[] list:listInvoices) {
 			lastInvoice.addItem(list[1]);

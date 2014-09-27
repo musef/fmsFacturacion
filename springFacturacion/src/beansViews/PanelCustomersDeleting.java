@@ -369,7 +369,7 @@ public class PanelCustomersDeleting implements ActionListener, ItemListener {
 				List<String[]> customerToErase=new ArrayList<String[]>();
 				String data[]={"",keyToErase};
 				customerToErase.add(data);
-				if (facturas.searchExtractInvoicesByCustomers(customerToErase).size()>0) {
+				if (facturas.searchExtractInvoicesByCustomers(customerToErase)!=null) {
 					if (JOptionPane.showConfirmDialog(mainFrame, "¿Realmente desea eliminar este cliente?\nTiene facturas grabadas.", "Borrado de clientes", JOptionPane.YES_NO_OPTION)==0) {
 						if (customers.eraseCustomer(keyToErase)) {
 							JOptionPane.showMessageDialog(mainFrame, "El cliente ha sido eliminado correctamente", "Borrado de clientes", JOptionPane.INFORMATION_MESSAGE);

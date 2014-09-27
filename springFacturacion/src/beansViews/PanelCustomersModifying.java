@@ -165,7 +165,9 @@ public class PanelCustomersModifying implements ActionListener, ItemListener {
 		nifF2=new JTextField("");
 		nifF2.setToolTipText("OBLIGATORIO: 9 caracteres");
 		//pagos=new PagosBean();
-		custPagos=pagosCust.getListPago();
+		if ((custPagos=pagosCust.getListPago())==null) {
+			custPagos.add(new String[5]);
+		}
 		getPay2=new JComboBox<String>();
 		getPay2.addItem("Seleccione pago");
 		for (String[]n:custPagos) {
@@ -490,6 +492,9 @@ public class PanelCustomersModifying implements ActionListener, ItemListener {
 			nifF2.setText(listCustomers.get(nameSelect2.getSelectedIndex()-1)[6]);
 			idPaymentF2=listCustomers.get(nameSelect2.getSelectedIndex()-1)[7];
 			String payment[]=pagosCust.getPago(idPaymentF2);
+			if (payment==null) {
+				payment=new String[5];
+			}
 
 			payF2.setText(payment[2]);
 			taxAddressF2.setText(listCustomers.get(nameSelect2.getSelectedIndex()-1)[8]);

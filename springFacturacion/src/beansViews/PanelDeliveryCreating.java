@@ -281,7 +281,11 @@ public class PanelDeliveryCreating extends UtilsFacturacion implements ActionLis
 		
 		ivaOp=new JComboBox<String>();
 		//ivas=new TiposIvaBean();
-		List<String[]> listIv=ivas.getListIva();
+		List<String[]> listIv;
+		listIv=ivas.getListIva();
+		if (listIv==null) {
+			listIv=new ArrayList<String[]>();
+		}
 		for (String[] a:listIv) {
 			if (!(a[1].equals("0") || a[4].equals("2"))) {
 				// si el iva no esta inactivo ni es de compras lo añade

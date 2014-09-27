@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-import javax.swing.JLabel;
 
 import main.SpringFacturacion;
 import beansControls.FileRecorder;
@@ -114,74 +113,81 @@ public class ListadosCsv {
 		String cabeceras="CLIENTE;"+"NÚMERO;"+"FECHA;"+"BASE IMPONIBLE;"+"TOTAL FACTURA;"+"ESTADO;\n";
 			
 		String cuerpo="";
+		String resumen="";
 		
-		
-		int elem=0;
-		double basTotal=0;
-		double impTotal=0;
-		
-		for (String a[]:listSelectedDeliveries) {		
-			long num=(long)Long.parseLong(a[3]);
-			// se procesan los numeros dentro del rango
-			if (deliv1<=num && num<=deliv2) {
-				// si estado es cero quiere decir todos los albaranes
-				if (state==0) {
+		if (listSelectedDeliveries!=null && !listSelectedDeliveries.isEmpty()) {
+			int elem=0;
+			double basTotal=0;
+			double impTotal=0;
+			
+			for (String a[]:listSelectedDeliveries) {		
+				long num=(long)Long.parseLong(a[3]);
+				// se procesan los numeros dentro del rango
+				if (deliv1<=num && num<=deliv2) {
+					// si estado es cero quiere decir todos los albaranes
+					if (state==0) {
 
-					double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
-					double tot=(double)Double.parseDouble(a[33]);
-					basTotal=basTotal+bas;
-					impTotal=impTotal+tot;
-					
-					String texto="";
-					if (a[1].isEmpty()) {
-						texto="PENDIENTE";
+						double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
+						double tot=(double)Double.parseDouble(a[33]);
+						basTotal=basTotal+bas;
+						impTotal=impTotal+tot;
+						
+						String texto="";
+						if (a[1].isEmpty()) {
+							texto="PENDIENTE";
+						} else {
+							texto="FACTURADO";
+						}
+						cuerpo+=a[2]+";"+a[3]+";"+a[4]+";"+formatoDecimal.format(bas)+";"+formatoDecimal.format(tot)+";"+texto+";\n";
+						
+						elem++;					
+					} else if (state==1) {
+						// estado 1 quiere decir albaranes pendientes
+						if (a[1].isEmpty()) {
+							double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
+							double tot=(double)Double.parseDouble(a[33]);
+							basTotal=basTotal+bas;
+							impTotal=impTotal+tot;
+							
+							cuerpo+=a[2]+";"+a[3]+";"+a[4]+";"+formatoDecimal.format(bas)+";"+formatoDecimal.format(tot)+";"+"PENDIENTE;\n";
+							
+							elem++;	
+						}
 					} else {
-						texto="FACTURADO";
-					}
-					cuerpo+=a[2]+";"+a[3]+";"+a[4]+";"+formatoDecimal.format(bas)+";"+formatoDecimal.format(tot)+";"+texto+";\n";
-					
-					elem++;					
-				} else if (state==1) {
-					// estado 1 quiere decir albaranes pendientes
-					if (a[1].isEmpty()) {
-						double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
-						double tot=(double)Double.parseDouble(a[33]);
-						basTotal=basTotal+bas;
-						impTotal=impTotal+tot;
-						
-						cuerpo+=a[2]+";"+a[3]+";"+a[4]+";"+formatoDecimal.format(bas)+";"+formatoDecimal.format(tot)+";"+"PENDIENTE;\n";
-						
-						elem++;	
-					}
-				} else {
-					// estado 2 quiere decir albaranes facturados
-					if (!a[1].isEmpty()) {
-						double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
-						double tot=(double)Double.parseDouble(a[33]);
-						basTotal=basTotal+bas;
-						impTotal=impTotal+tot;
-						
-						cuerpo+=a[2]+";"+a[3]+";"+a[4]+";"+formatoDecimal.format(bas)+";"+formatoDecimal.format(tot)+";"+"FACTURADO;\n";	
-						elem++;	
+						// estado 2 quiere decir albaranes facturados
+						if (!a[1].isEmpty()) {
+							double bas=(double)Double.parseDouble(a[21])+(double)Double.parseDouble(a[22])+(double)Double.parseDouble(a[25])+(double)Double.parseDouble(a[28]);
+							double tot=(double)Double.parseDouble(a[33]);
+							basTotal=basTotal+bas;
+							impTotal=impTotal+tot;
+							
+							cuerpo+=a[2]+";"+a[3]+";"+a[4]+";"+formatoDecimal.format(bas)+";"+formatoDecimal.format(tot)+";"+"FACTURADO;\n";	
+							elem++;	
+						}
 					}
 				}
+
 			}
+			
 
+				// rellenamos el cuerpo con lineas hasta el minimo de 25, si es que no hay suficientes
+			
+			for (int j=elem;j<24;j++) {
+
+				cuerpo+=";;;;;;"+"\n";
+
+			}
+			
+			// añadimos con los sumatorios
+			resumen="TOTALES;;;"+"BASES;"+"IMPORTES;;\n";
+			resumen+=";;;"+formatoDecimal.format(basTotal)+";"+formatoDecimal.format(impTotal)+";;\n\n";
+			
+		} else {
+			cuerpo="NO EXISTEN DATOS EN LA SELECCION\n\n\n";
+			resumen="";
 		}
 		
 
-			// rellenamos el cuerpo con lineas hasta el minimo de 25, si es que no hay suficientes
-		
-		for (int j=elem;j<24;j++) {
-
-			cuerpo+=";;;;;;"+"\n";
-
-		}
-		
-		// añadimos con los sumatorios
-		String resumen="TOTALES;;;"+"BASES;"+"IMPORTES;;\n";
-		resumen+=";;;"+formatoDecimal.format(basTotal)+";"+formatoDecimal.format(impTotal)+";;\n\n";
-		
 				
 		// PIE
 		//ClockAndDate today=new ClockAndDate();

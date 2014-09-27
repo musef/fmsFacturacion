@@ -226,7 +226,9 @@ public class PanelInvoicesDeleting implements ActionListener, ItemListener {
 		selInvoiceC=new JComboBox<String>();
 		selInvoiceC.addItem("Seleccione número...");
 		//clienteFac=new ClientesCean();
-		listInvoiceC=facturador.searchAllInvoiceNumber();
+		if ((listInvoiceC=facturador.searchAllInvoiceNumber())==null) {
+			listInvoiceC=new ArrayList<String[]>();
+		}
 		for (String[] data: listInvoiceC) {
 			selInvoiceC.addItem(data[1]);
 		}
@@ -781,8 +783,10 @@ public class PanelInvoicesDeleting implements ActionListener, ItemListener {
 					listInvoiceC=new ArrayList<String[]>();
 					selInvoiceC=new JComboBox<String>();
 					selInvoiceC.addItem("Seleccione número...");
-					//clienteFac=new ClientesCean();
-					listInvoiceC=facturador.searchAllInvoiceNumber();
+					
+					if ((listInvoiceC=facturador.searchAllInvoiceNumber())==null) {
+						listInvoiceC=new ArrayList<String[]>();
+					}
 					for (String[] data: listInvoiceC) {
 						selInvoiceC.addItem(data[1]);
 					}

@@ -733,186 +733,177 @@ public class PanelCustomersPrinting implements ActionListener, ItemListener {
 		
 		// CUERPO
 		
-		// CREAMOS UNA VISUALIZACION DE 25 LINEAS MINIMO
 		JPanel marcoList=new JPanel();
-		int listRows=(listInvoicesToPrinting.size()+(numberCustomers*2)+4);
-		if (listRows<25) {
-			listRows=25;
-		}
-		GridLayout layout=new GridLayout(listRows,7);
-		marcoList.setLayout(layout);
-
-		marcoList.add(new JLabel("CLIENTE"));
-		marcoList.add(new JLabel("SERIE"));
-		marcoList.add(new JLabel("FACTURA"));
-		marcoList.add(new JLabel("  FECHA"));
-		marcoList.add(new JLabel("        BASE"));
-		marcoList.add(new JLabel("         IVA"));
-		marcoList.add(new JLabel("      TOTAL"));
-
-
-		int elem=0;
-		double basTotal=0;
-		double cuoTotal=0;
-		double impTotal=0;
-		double basParcial=0;
-		double cuoParcial=0;
-		double impParcial=0;
 		
+		if (listInvoicesToPrinting!=null && !listInvoicesToPrinting.isEmpty()) {
 
-		
-		String currentCustomer=listInvoicesToPrinting.get(0)[10];
-		
-		for (String a[]:listInvoicesToPrinting) {		
+			// CREAMOS UNA VISUALIZACION DE 25 LINEAS MINIMO
 			
-			if (!currentCustomer.equals(a[10])) {
-				
-				// ha cambiado el cliente
-				currentCustomer=a[10];
-				
-				// imprimimos el resumen de datos
-				marcoList.add(new JLabel("SUBTOTAL..."));
-				marcoList.add(new JLabel(" "));
-				marcoList.add(new JLabel(" "));
-				marcoList.add(new JLabel(" "));
-				String b1=formatoDecimal.format(basParcial);
-				for (int n=b1.length();n<12;n++) {
-					b1=" "+b1;
-				}
-				if (basParcial<1000) {
-					b1=" "+b1;
-				}
-				String c1=formatoDecimal.format(cuoParcial);
-				for (int n=c1.length();n<12;n++) {
-					c1=" "+c1;
-				}
-				if (cuoParcial<1000) {
-					c1=" "+c1;
-				}
-				String t1=formatoDecimal.format(impParcial);
-				for (int n=t1.length();n<12;n++) {
-					t1=" "+t1;
-				}
-				if (impParcial<1000) {
-					t1=" "+t1;
-				}
-				marcoList.add(labelFont(b1));	
-				marcoList.add(labelFont(c1));	
-				marcoList.add(labelFont(t1));
-				basParcial=0;
-				cuoParcial=0;
-				impParcial=0;
-				elem++;	
-				
-				marcoList.add(new JLabel(" "));
-				marcoList.add(new JLabel(" "));
-				marcoList.add(new JLabel(" "));
-				marcoList.add(new JLabel(" "));
-				marcoList.add(new JLabel(" "));
-				marcoList.add(new JLabel(" "));
-				marcoList.add(new JLabel(" "));
-				elem++;	
-				
-			} 
+			int listRows=(listInvoicesToPrinting.size()+(numberCustomers*2)+4);
+			if (listRows<25) {
+				listRows=25;
+			}
+			GridLayout layout=new GridLayout(listRows,7);
+			marcoList.setLayout(layout);
 
+			marcoList.add(new JLabel("CLIENTE"));
+			marcoList.add(new JLabel("SERIE"));
+			marcoList.add(new JLabel("FACTURA"));
+			marcoList.add(new JLabel("  FECHA"));
+			marcoList.add(new JLabel("        BASE"));
+			marcoList.add(new JLabel("         IVA"));
+			marcoList.add(new JLabel("      TOTAL"));
+
+
+			@SuppressWarnings("unused")
+			int elem=0;
+			double basTotal=0;
+			double cuoTotal=0;
+			double impTotal=0;
+			double basParcial=0;
+			double cuoParcial=0;
+			double impParcial=0;
 			
-				marcoList.add(labelFont(a[11]));
-				marcoList.add(labelFont(a[2]));
-				marcoList.add(labelFont(a[1]));
-				String fecha=" ";
-				if (a[3].length()>=10) {
-					fecha=a[3].substring(8)+a[3].substring(4,8)+a[3].substring(0,4);
-				}
-				marcoList.add(labelFont(fecha));
-				double bas=(double)Double.parseDouble(a[16])+(double)Double.parseDouble(a[17])+(double)Double.parseDouble(a[20])+(double)Double.parseDouble(a[23]);
-				double tot=(double)Double.parseDouble(a[28]);
-				double iva=tot-bas;
-				// acumulacion sobre los parciales
-				basParcial=basParcial+bas;
-				cuoParcial=cuoParcial+iva;
-				impParcial=impParcial+tot;
-				// acumulacion sobre los totales
-				basTotal=basTotal+bas;
-				cuoTotal=cuoTotal+iva;
-				impTotal=impTotal+tot;
+			
+			String currentCustomer=listInvoicesToPrinting.get(0)[10];
+			
+			for (String a[]:listInvoicesToPrinting) {		
 				
-				String b1=formatoDecimal.format(bas);
-				for (int n=b1.length();n<12;n++) {
-					b1=" "+b1;
-				}
-				if (bas<1000) {
-					b1=" "+b1;
-				}
-				String c1=formatoDecimal.format(iva);
-				for (int n=c1.length();n<12;n++) {
-					c1=" "+c1;
-				}
-				if (iva<1000) {
-					c1=" "+c1;
-				}
-				String t1=formatoDecimal.format(tot);
-				for (int n=t1.length();n<12;n++) {
-					t1=" "+t1;
-				}
-				if (tot<1000) {
-					t1=" "+t1;
-				}
-				
-				marcoList.add(labelFont(b1));	
-				marcoList.add(labelFont(c1));	
-				marcoList.add(labelFont(t1));	
-				elem++;
-	
-		}
-		
-		// ultimo cliente hay que imprimir el resumen
-		
-		// imprimimos el resumen de datos
-		marcoList.add(new JLabel("SUBTOTAL..."));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		String b1=formatoDecimal.format(basParcial);
-		for (int n=b1.length();n<12;n++) {
-			b1=" "+b1;
-		}
-		if (basParcial<1000) {
-			b1=" "+b1;
-		}
-		String c1=formatoDecimal.format(cuoParcial);
-		for (int n=c1.length();n<12;n++) {
-			c1=" "+c1;
-		}
-		if (cuoParcial<1000) {
-			c1=" "+c1;
-		}
-		String t1=formatoDecimal.format(impParcial);
-		for (int n=t1.length();n<12;n++) {
-			t1=" "+t1;
-		}
-		if (impParcial<1000) {
-			t1=" "+t1;
-		}
-		marcoList.add(labelFont(b1));	
-		marcoList.add(labelFont(c1));	
-		marcoList.add(labelFont(t1));
-		basParcial=0;
-		cuoParcial=0;
-		impParcial=0;
-		elem++;	
-		
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		elem++;
-		
-				// rellenamos el cuerpo con lineas hasta el minimo de 25, si es que no hay suficientes
+				if (!currentCustomer.equals(a[10])) {
+					
+					// ha cambiado el cliente
+					currentCustomer=a[10];
+					
+					// imprimimos el resumen de datos
+					marcoList.add(new JLabel("SUBTOTAL..."));
+					marcoList.add(new JLabel(" "));
+					marcoList.add(new JLabel(" "));
+					marcoList.add(new JLabel(" "));
+					String b1=formatoDecimal.format(basParcial);
+					for (int n=b1.length();n<12;n++) {
+						b1=" "+b1;
+					}
+					if (basParcial<1000) {
+						b1=" "+b1;
+					}
+					String c1=formatoDecimal.format(cuoParcial);
+					for (int n=c1.length();n<12;n++) {
+						c1=" "+c1;
+					}
+					if (cuoParcial<1000) {
+						c1=" "+c1;
+					}
+					String t1=formatoDecimal.format(impParcial);
+					for (int n=t1.length();n<12;n++) {
+						t1=" "+t1;
+					}
+					if (impParcial<1000) {
+						t1=" "+t1;
+					}
+					marcoList.add(labelFont(b1));	
+					marcoList.add(labelFont(c1));	
+					marcoList.add(labelFont(t1));
+					basParcial=0;
+					cuoParcial=0;
+					impParcial=0;
+					elem++;	
+					
+					marcoList.add(new JLabel(" "));
+					marcoList.add(new JLabel(" "));
+					marcoList.add(new JLabel(" "));
+					marcoList.add(new JLabel(" "));
+					marcoList.add(new JLabel(" "));
+					marcoList.add(new JLabel(" "));
+					marcoList.add(new JLabel(" "));
+					elem++;	
+					
+				} 
 
-		for (int j=(listInvoicesToPrinting.size()+(numberCustomers*2)+4);j<25;j++) {
+				
+					marcoList.add(labelFont(a[11]));
+					marcoList.add(labelFont(a[2]));
+					marcoList.add(labelFont(a[1]));
+					String fecha=" ";
+					if (a[3].length()>=10) {
+						fecha=a[3].substring(8)+a[3].substring(4,8)+a[3].substring(0,4);
+					}
+					marcoList.add(labelFont(fecha));
+					double bas=(double)Double.parseDouble(a[16])+(double)Double.parseDouble(a[17])+(double)Double.parseDouble(a[20])+(double)Double.parseDouble(a[23]);
+					double tot=(double)Double.parseDouble(a[28]);
+					double iva=tot-bas;
+					// acumulacion sobre los parciales
+					basParcial=basParcial+bas;
+					cuoParcial=cuoParcial+iva;
+					impParcial=impParcial+tot;
+					// acumulacion sobre los totales
+					basTotal=basTotal+bas;
+					cuoTotal=cuoTotal+iva;
+					impTotal=impTotal+tot;
+					
+					String b1=formatoDecimal.format(bas);
+					for (int n=b1.length();n<12;n++) {
+						b1=" "+b1;
+					}
+					if (bas<1000) {
+						b1=" "+b1;
+					}
+					String c1=formatoDecimal.format(iva);
+					for (int n=c1.length();n<12;n++) {
+						c1=" "+c1;
+					}
+					if (iva<1000) {
+						c1=" "+c1;
+					}
+					String t1=formatoDecimal.format(tot);
+					for (int n=t1.length();n<12;n++) {
+						t1=" "+t1;
+					}
+					if (tot<1000) {
+						t1=" "+t1;
+					}
+					
+					marcoList.add(labelFont(b1));	
+					marcoList.add(labelFont(c1));	
+					marcoList.add(labelFont(t1));	
+					elem++;
+		
+			}
+			
+			// ultimo cliente hay que imprimir el resumen
+			
+			// imprimimos el resumen de datos
+			marcoList.add(new JLabel("SUBTOTAL..."));
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(" "));
+			String b1=formatoDecimal.format(basParcial);
+			for (int n=b1.length();n<12;n++) {
+				b1=" "+b1;
+			}
+			if (basParcial<1000) {
+				b1=" "+b1;
+			}
+			String c1=formatoDecimal.format(cuoParcial);
+			for (int n=c1.length();n<12;n++) {
+				c1=" "+c1;
+			}
+			if (cuoParcial<1000) {
+				c1=" "+c1;
+			}
+			String t1=formatoDecimal.format(impParcial);
+			for (int n=t1.length();n<12;n++) {
+				t1=" "+t1;
+			}
+			if (impParcial<1000) {
+				t1=" "+t1;
+			}
+			marcoList.add(labelFont(b1));	
+			marcoList.add(labelFont(c1));	
+			marcoList.add(labelFont(t1));
+			basParcial=0;
+			cuoParcial=0;
+			impParcial=0;
+			elem++;	
 			
 			marcoList.add(new JLabel(" "));
 			marcoList.add(new JLabel(" "));
@@ -921,35 +912,56 @@ public class PanelCustomersPrinting implements ActionListener, ItemListener {
 			marcoList.add(new JLabel(" "));
 			marcoList.add(new JLabel(" "));
 			marcoList.add(new JLabel(" "));
+			elem++;
+			
+					// rellenamos el cuerpo con lineas hasta el minimo de 25, si es que no hay suficientes
+
+			for (int j=(listInvoicesToPrinting.size()+(numberCustomers*2)+4);j<25;j++) {
+				
+				marcoList.add(new JLabel(" "));
+				marcoList.add(new JLabel(" "));
+				marcoList.add(new JLabel(" "));
+				marcoList.add(new JLabel(" "));
+				marcoList.add(new JLabel(" "));
+				marcoList.add(new JLabel(" "));
+				marcoList.add(new JLabel(" "));
+
+			}
+			
+			marcoList.add(new JLabel("TOTALES"));
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel("BASES"));
+			marcoList.add(new JLabel("CUOTAS"));
+			marcoList.add(new JLabel("IMPORTES"));
+			
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(formatoDecimal.format(basTotal)));
+			marcoList.add(new JLabel(formatoDecimal.format(cuoTotal)));
+			marcoList.add(new JLabel(formatoDecimal.format(impTotal)));
+			
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel(" "));
+			
+		} else {
+
+			GridLayout layout=new GridLayout(25,3);
+			marcoList.setLayout(layout);
+
+			marcoList.add(new JLabel(" "));
+			marcoList.add(new JLabel("NO EXISTEN DATOS EN LA SELECCION"));
+			marcoList.add(new JLabel(" "));
 
 		}
-
-		System.out.println(" fuuu "+elem);
-		
-		marcoList.add(new JLabel("TOTALES"));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel("BASES"));
-		marcoList.add(new JLabel("CUOTAS"));
-		marcoList.add(new JLabel("IMPORTES"));
-		
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(formatoDecimal.format(basTotal)));
-		marcoList.add(new JLabel(formatoDecimal.format(cuoTotal)));
-		marcoList.add(new JLabel(formatoDecimal.format(impTotal)));
-		
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		marcoList.add(new JLabel(" "));
-		
 		
 		// lo ponemos en un scrollPane por si excede la pantalla
 		JScrollPane scroll=new JScrollPane(marcoList);
@@ -1041,160 +1053,169 @@ public class PanelCustomersPrinting implements ActionListener, ItemListener {
 		// convierte fechas para comparacion
 		String d1=date1.substring(6)+date1.substring(2, 6)+date1.substring(0, 2);
 		String d2=date2.substring(6)+date2.substring(2, 6)+date2.substring(0, 2);
-		
-		// cliente que estamos procesando actualmente
-		String currentCustomer=listSelectedInvoices.get(0)[10];
-		
+
 		// VARIABLE DONDE SE ACUMULA INFORMACION
 		String cuerpo="";
 		
-		for (String a[]:listSelectedInvoices) {		
+		if (listSelectedInvoices!=null && !listSelectedInvoices.isEmpty()) {
+
+			// cliente que estamos procesando actualmente
+			String currentCustomer=listSelectedInvoices.get(0)[10];
 			
-			if (!currentCustomer.equals(a[10])) {
-				
-				// ha cambiado el cliente
-				currentCustomer=a[10];
-				
-				// imprimimos el resumen de datos
-				cuerpo+="SUBTOTAL...;;;;";
-				String b1=formatoDecimal.format(basParcial);
-				for (int n=b1.length();n<12;n++) {
-					b1=" "+b1;
-				}
-				if (basParcial<1000) {
-					b1=" "+b1;
-				}
-				String c1=formatoDecimal.format(cuoParcial);
-				for (int n=c1.length();n<12;n++) {
-					c1=" "+c1;
-				}
-				if (cuoParcial<1000) {
-					c1=" "+c1;
-				}
-				String t1=formatoDecimal.format(impParcial);
-				for (int n=t1.length();n<12;n++) {
-					t1=" "+t1;
-				}
-				if (impParcial<1000) {
-					t1=" "+t1;
-				}
-				cuerpo+=b1+";";	
-				cuerpo+=c1+";";
-				cuerpo+=t1+";"+"\n";
 
-				basParcial=0;
-				cuoParcial=0;
-				impParcial=0;
-				elem++;	
-				
-				// espacio de separacion
-				cuerpo+=";;;;;;;"+"\n";
-				elem++;	
-				
-			} 
-
-			if (a[3].compareTo(d1)>=0 && a[3].compareTo(d2)<=0) {
-
-				String fecha=" ";
-				if (a[3].length()>=10) {
-					fecha=a[3].substring(8)+a[3].substring(4,8)+a[3].substring(0,4);
-				}
-				
-				cuerpo+=a[11]+";";	
-				cuerpo+=a[2]+";";
-				cuerpo+=a[1]+";";
-				cuerpo+=fecha+";";
-				
-				double bas=(double)Double.parseDouble(a[16])+(double)Double.parseDouble(a[17])+(double)Double.parseDouble(a[20])+(double)Double.parseDouble(a[23]);
-				double tot=(double)Double.parseDouble(a[28]);
-				double iva=tot-bas;
-				// acumulacion sobre los parciales
-				basParcial=basParcial+bas;
-				cuoParcial=cuoParcial+iva;
-				impParcial=impParcial+tot;
-				// acumulacion sobre los totales
-				basTotal=basTotal+bas;
-				cuoTotal=cuoTotal+iva;
-				impTotal=impTotal+tot;
-				
-				String b1=formatoDecimal.format(bas);
-				for (int n=b1.length();n<12;n++) {
-					b1=" "+b1;
-				}
-				if (bas<1000) {
-					b1=" "+b1;
-				}
-				String c1=formatoDecimal.format(iva);
-				for (int n=c1.length();n<12;n++) {
-					c1=" "+c1;
-				}
-				if (iva<1000) {
-					c1=" "+c1;
-				}
-				String t1=formatoDecimal.format(tot);
-				for (int n=t1.length();n<12;n++) {
-					t1=" "+t1;
-				}
-				if (tot<1000) {
-					t1=" "+t1;
-				}
-				
-				cuerpo+=b1+";";	
-				cuerpo+=c1+";";
-				cuerpo+=t1+";"+"\n";	
-				elem++;
 			
+			for (String a[]:listSelectedInvoices) {		
+				
+				if (!currentCustomer.equals(a[10])) {
+					
+					// ha cambiado el cliente
+					currentCustomer=a[10];
+					
+					// imprimimos el resumen de datos
+					cuerpo+="SUBTOTAL...;;;;";
+					String b1=formatoDecimal.format(basParcial);
+					for (int n=b1.length();n<12;n++) {
+						b1=" "+b1;
+					}
+					if (basParcial<1000) {
+						b1=" "+b1;
+					}
+					String c1=formatoDecimal.format(cuoParcial);
+					for (int n=c1.length();n<12;n++) {
+						c1=" "+c1;
+					}
+					if (cuoParcial<1000) {
+						c1=" "+c1;
+					}
+					String t1=formatoDecimal.format(impParcial);
+					for (int n=t1.length();n<12;n++) {
+						t1=" "+t1;
+					}
+					if (impParcial<1000) {
+						t1=" "+t1;
+					}
+					cuerpo+=b1+";";	
+					cuerpo+=c1+";";
+					cuerpo+=t1+";"+"\n";
+
+					basParcial=0;
+					cuoParcial=0;
+					impParcial=0;
+					elem++;	
+					
+					// espacio de separacion
+					cuerpo+=";;;;;;;"+"\n";
+					elem++;	
+					
+				} 
+
+				if (a[3].compareTo(d1)>=0 && a[3].compareTo(d2)<=0) {
+
+					String fecha=" ";
+					if (a[3].length()>=10) {
+						fecha=a[3].substring(8)+a[3].substring(4,8)+a[3].substring(0,4);
+					}
+					
+					cuerpo+=a[11]+";";	
+					cuerpo+=a[2]+";";
+					cuerpo+=a[1]+";";
+					cuerpo+=fecha+";";
+					
+					double bas=(double)Double.parseDouble(a[16])+(double)Double.parseDouble(a[17])+(double)Double.parseDouble(a[20])+(double)Double.parseDouble(a[23]);
+					double tot=(double)Double.parseDouble(a[28]);
+					double iva=tot-bas;
+					// acumulacion sobre los parciales
+					basParcial=basParcial+bas;
+					cuoParcial=cuoParcial+iva;
+					impParcial=impParcial+tot;
+					// acumulacion sobre los totales
+					basTotal=basTotal+bas;
+					cuoTotal=cuoTotal+iva;
+					impTotal=impTotal+tot;
+					
+					String b1=formatoDecimal.format(bas);
+					for (int n=b1.length();n<12;n++) {
+						b1=" "+b1;
+					}
+					if (bas<1000) {
+						b1=" "+b1;
+					}
+					String c1=formatoDecimal.format(iva);
+					for (int n=c1.length();n<12;n++) {
+						c1=" "+c1;
+					}
+					if (iva<1000) {
+						c1=" "+c1;
+					}
+					String t1=formatoDecimal.format(tot);
+					for (int n=t1.length();n<12;n++) {
+						t1=" "+t1;
+					}
+					if (tot<1000) {
+						t1=" "+t1;
+					}
+					
+					cuerpo+=b1+";";	
+					cuerpo+=c1+";";
+					cuerpo+=t1+";"+"\n";	
+					elem++;
+				
+				}
+					
 			}
-				
-		}
-		
-		// ultimo cliente hay que imprimir el resumen
-		
-		// imprimimos el resumen de datos
-		cuerpo+="SUBTOTAL...;;;;";
-		String b1=formatoDecimal.format(basParcial);
-		for (int n=b1.length();n<12;n++) {
-			b1=" "+b1;
-		}
-		if (basParcial<1000) {
-			b1=" "+b1;
-		}
-		String c1=formatoDecimal.format(cuoParcial);
-		for (int n=c1.length();n<12;n++) {
-			c1=" "+c1;
-		}
-		if (cuoParcial<1000) {
-			c1=" "+c1;
-		}
-		String t1=formatoDecimal.format(impParcial);
-		for (int n=t1.length();n<12;n++) {
-			t1=" "+t1;
-		}
-		if (impParcial<1000) {
-			t1=" "+t1;
-		}
-		cuerpo+=b1+";";	
-		cuerpo+=c1+";";
-		cuerpo+=t1+";"+"\n";
+			
+			// ultimo cliente hay que imprimir el resumen
+			
+			// imprimimos el resumen de datos
+			cuerpo+="SUBTOTAL...;;;;";
+			String b1=formatoDecimal.format(basParcial);
+			for (int n=b1.length();n<12;n++) {
+				b1=" "+b1;
+			}
+			if (basParcial<1000) {
+				b1=" "+b1;
+			}
+			String c1=formatoDecimal.format(cuoParcial);
+			for (int n=c1.length();n<12;n++) {
+				c1=" "+c1;
+			}
+			if (cuoParcial<1000) {
+				c1=" "+c1;
+			}
+			String t1=formatoDecimal.format(impParcial);
+			for (int n=t1.length();n<12;n++) {
+				t1=" "+t1;
+			}
+			if (impParcial<1000) {
+				t1=" "+t1;
+			}
+			cuerpo+=b1+";";	
+			cuerpo+=c1+";";
+			cuerpo+=t1+";"+"\n";
 
-		basParcial=0;
-		cuoParcial=0;
-		impParcial=0;
-		elem++;	
-				
-				
-				// rellenamos el cuerpo con lineas hasta el minimo de 25, si es que no hay suficientes
-		
-		for (int j=elem;j<24;j++) {
-			cuerpo+=";;;;;;;"+"\n";	
-		}
-			//RESUMEN FINAL DEL LISTADO
-		cuerpo+="TOTALES;;;;BASES;CUOTAS;IMPORTES;"+"\n";
+			basParcial=0;
+			cuoParcial=0;
+			impParcial=0;
+			elem++;	
+					
+					
+					// rellenamos el cuerpo con lineas hasta el minimo de 25, si es que no hay suficientes
+			
+			for (int j=elem;j<24;j++) {
+				cuerpo+=";;;;;;;"+"\n";	
+			}
+				//RESUMEN FINAL DEL LISTADO
+			cuerpo+="TOTALES;;;;BASES;CUOTAS;IMPORTES;"+"\n";
 
-		cuerpo+=";;;;";
-		cuerpo+=formatoDecimal.format(basTotal)+";";
-		cuerpo+=formatoDecimal.format(cuoTotal)+";";
-		cuerpo+=formatoDecimal.format(impTotal)+";"+"\n\n";
+			cuerpo+=";;;;";
+			cuerpo+=formatoDecimal.format(basTotal)+";";
+			cuerpo+=formatoDecimal.format(cuoTotal)+";";
+			cuerpo+=formatoDecimal.format(impTotal)+";"+"\n\n";
+
+		} else {
+			cuerpo="NO EXISTEN DATOS EN LA SELECCION\n\n\n";
+		}
+		
 				
 		// PIE
 		//ClockAndDate today=new ClockAndDate();
@@ -1241,170 +1262,186 @@ public class PanelCustomersPrinting implements ActionListener, ItemListener {
 		String d1=date1.substring(6)+date1.substring(2, 6)+date1.substring(0, 2);
 		String d2=date2.substring(6)+date2.substring(2, 6)+date2.substring(0, 2);
 		
-		// cliente que estamos procesando actualmente
-		String currentCustomer=listSelectedInvoices.get(0)[10];
-			
-		String data[]=new String[7];
-		
-		for (String a[]:listSelectedInvoices) {		
-			
-			if (!currentCustomer.equals(a[10])) {
-				
-				// ha cambiado el cliente
-				currentCustomer=a[10];
-				
-				// imprimimos el resumen de datos
-				data=new String[7];
-				data[0]="SUBTOTAL...";
-				data[1]="";
-				data[2]="";
-				data[3]="";
-				String b1=formatoDecimal.format(basParcial);
-				for (int n=b1.length();n<12;n++) {
-					b1=" "+b1;
-				}
-				if (basParcial<1000) {
-					b1=" "+b1;
-				}
-				String c1=formatoDecimal.format(cuoParcial);
-				for (int n=c1.length();n<12;n++) {
-					c1=" "+c1;
-				}
-				if (cuoParcial<1000) {
-					c1=" "+c1;
-				}
-				String t1=formatoDecimal.format(impParcial);
-				for (int n=t1.length();n<12;n++) {
-					t1=" "+t1;
-				}
-				if (impParcial<1000) {
-					t1=" "+t1;
-				}
-				data[4]=b1;
-				data[5]=c1;
-				data[6]=t1;
-				cuerpo.add(data);
+		if (listSelectedInvoices!=null && !listSelectedInvoices.isEmpty()) {
 
-				basParcial=0;
-				cuoParcial=0;
-				impParcial=0;	
+			// cliente que estamos procesando actualmente
+			String currentCustomer=listSelectedInvoices.get(0)[10];
 				
-			} 
-
-			if (a[3].compareTo(d1)>=0 && a[3].compareTo(d2)<=0) {
-
-				String fecha=" ";
-				if (a[3].length()>=10) {
-					fecha=a[3].substring(8)+a[3].substring(4,8)+a[3].substring(0,4);
-				}
-				data=new String[7];
-				data[0]=a[11];
-				data[1]=a[2];
-				data[2]=a[1];
-				data[3]=fecha;
-				
-				double bas=(double)Double.parseDouble(a[16])+(double)Double.parseDouble(a[17])+(double)Double.parseDouble(a[20])+(double)Double.parseDouble(a[23]);
-				double tot=(double)Double.parseDouble(a[28]);
-				double iva=tot-bas;
-				// acumulacion sobre los parciales
-				basParcial=basParcial+bas;
-				cuoParcial=cuoParcial+iva;
-				impParcial=impParcial+tot;
-				// acumulacion sobre los totales
-				basTotal=basTotal+bas;
-				cuoTotal=cuoTotal+iva;
-				impTotal=impTotal+tot;
-				
-				String b1=formatoDecimal.format(bas);
-				for (int n=b1.length();n<12;n++) {
-					b1=" "+b1;
-				}
-				if (bas<1000) {
-					b1=" "+b1;
-				}
-				String c1=formatoDecimal.format(iva);
-				for (int n=c1.length();n<12;n++) {
-					c1=" "+c1;
-				}
-				if (iva<1000) {
-					c1=" "+c1;
-				}
-				String t1=formatoDecimal.format(tot);
-				for (int n=t1.length();n<12;n++) {
-					t1=" "+t1;
-				}
-				if (tot<1000) {
-					t1=" "+t1;
-				}
-				
-				data[4]=b1;
-				data[5]=c1;
-				data[6]=t1;
-				cuerpo.add(data);	
+			String data[]=new String[7];
 			
+			for (String a[]:listSelectedInvoices) {		
+				
+				if (!currentCustomer.equals(a[10])) {
+					
+					// ha cambiado el cliente
+					currentCustomer=a[10];
+					
+					// imprimimos el resumen de datos
+					data=new String[7];
+					data[0]="SUBTOTAL...";
+					data[1]="";
+					data[2]="";
+					data[3]="";
+					String b1=formatoDecimal.format(basParcial);
+					for (int n=b1.length();n<12;n++) {
+						b1=" "+b1;
+					}
+					if (basParcial<1000) {
+						b1=" "+b1;
+					}
+					String c1=formatoDecimal.format(cuoParcial);
+					for (int n=c1.length();n<12;n++) {
+						c1=" "+c1;
+					}
+					if (cuoParcial<1000) {
+						c1=" "+c1;
+					}
+					String t1=formatoDecimal.format(impParcial);
+					for (int n=t1.length();n<12;n++) {
+						t1=" "+t1;
+					}
+					if (impParcial<1000) {
+						t1=" "+t1;
+					}
+					data[4]=b1;
+					data[5]=c1;
+					data[6]=t1;
+					cuerpo.add(data);
+
+					basParcial=0;
+					cuoParcial=0;
+					impParcial=0;	
+					
+				} 
+
+				if (a[3].compareTo(d1)>=0 && a[3].compareTo(d2)<=0) {
+
+					String fecha=" ";
+					if (a[3].length()>=10) {
+						fecha=a[3].substring(8)+a[3].substring(4,8)+a[3].substring(0,4);
+					}
+					data=new String[7];
+					data[0]=a[11];
+					data[1]=a[2];
+					data[2]=a[1];
+					data[3]=fecha;
+					
+					double bas=(double)Double.parseDouble(a[16])+(double)Double.parseDouble(a[17])+(double)Double.parseDouble(a[20])+(double)Double.parseDouble(a[23]);
+					double tot=(double)Double.parseDouble(a[28]);
+					double iva=tot-bas;
+					// acumulacion sobre los parciales
+					basParcial=basParcial+bas;
+					cuoParcial=cuoParcial+iva;
+					impParcial=impParcial+tot;
+					// acumulacion sobre los totales
+					basTotal=basTotal+bas;
+					cuoTotal=cuoTotal+iva;
+					impTotal=impTotal+tot;
+					
+					String b1=formatoDecimal.format(bas);
+					for (int n=b1.length();n<12;n++) {
+						b1=" "+b1;
+					}
+					if (bas<1000) {
+						b1=" "+b1;
+					}
+					String c1=formatoDecimal.format(iva);
+					for (int n=c1.length();n<12;n++) {
+						c1=" "+c1;
+					}
+					if (iva<1000) {
+						c1=" "+c1;
+					}
+					String t1=formatoDecimal.format(tot);
+					for (int n=t1.length();n<12;n++) {
+						t1=" "+t1;
+					}
+					if (tot<1000) {
+						t1=" "+t1;
+					}
+					
+					data[4]=b1;
+					data[5]=c1;
+					data[6]=t1;
+					cuerpo.add(data);	
+				
+				}
+					
 			}
-				
+			
+			// ultimo cliente hay que imprimir el resumen
+			
+			// imprimimos el resumen de datos
+			data=new String[7];
+			data[0]="SUBTOTAL...";
+			data[1]="";
+			data[2]="";
+			data[3]="";
+			String b1=formatoDecimal.format(basParcial);
+			for (int n=b1.length();n<12;n++) {
+				b1=" "+b1;
+			}
+			if (basParcial<1000) {
+				b1=" "+b1;
+			}
+			String c1=formatoDecimal.format(cuoParcial);
+			for (int n=c1.length();n<12;n++) {
+				c1=" "+c1;
+			}
+			if (cuoParcial<1000) {
+				c1=" "+c1;
+			}
+			String t1=formatoDecimal.format(impParcial);
+			for (int n=t1.length();n<12;n++) {
+				t1=" "+t1;
+			}
+			if (impParcial<1000) {
+				t1=" "+t1;
+			}
+			data[4]=b1;
+			data[5]=c1;
+			data[6]=t1;
+			cuerpo.add(data);
+
+			basParcial=0;
+			cuoParcial=0;
+			impParcial=0;	
+			
+				//RESUMEN FINAL DEL LISTADO
+
+			data=new String[7];
+			data[0]="TOTALES";
+			data[1]="";
+			data[2]="";
+			data[3]="";
+			data[4]="BASES";
+			data[5]="CUOTAS";
+			data[6]="IMPORTES";
+			cuerpo.add(data);
+
+			data=new String[7];
+			data[0]="";
+			data[1]="";
+			data[2]="";
+			data[3]="";
+			data[4]=formatoDecimal.format(basTotal);
+			data[5]=formatoDecimal.format(cuoTotal);
+			data[6]=formatoDecimal.format(impTotal);
+			cuerpo.add(data);
+			
+		} else {
+			String data[]=new String[7];
+			data[0]="NO EXISTEN DATOS EN LA SELECCION";
+			data[1]="";
+			data[2]="";
+			data[3]="";
+			data[4]="";
+			data[5]="";
+			data[6]="";
+			cuerpo.add(data);
 		}
 		
-		// ultimo cliente hay que imprimir el resumen
-		
-		// imprimimos el resumen de datos
-		data=new String[7];
-		data[0]="SUBTOTAL...";
-		data[1]="";
-		data[2]="";
-		data[3]="";
-		String b1=formatoDecimal.format(basParcial);
-		for (int n=b1.length();n<12;n++) {
-			b1=" "+b1;
-		}
-		if (basParcial<1000) {
-			b1=" "+b1;
-		}
-		String c1=formatoDecimal.format(cuoParcial);
-		for (int n=c1.length();n<12;n++) {
-			c1=" "+c1;
-		}
-		if (cuoParcial<1000) {
-			c1=" "+c1;
-		}
-		String t1=formatoDecimal.format(impParcial);
-		for (int n=t1.length();n<12;n++) {
-			t1=" "+t1;
-		}
-		if (impParcial<1000) {
-			t1=" "+t1;
-		}
-		data[4]=b1;
-		data[5]=c1;
-		data[6]=t1;
-		cuerpo.add(data);
 
-		basParcial=0;
-		cuoParcial=0;
-		impParcial=0;	
-		
-			//RESUMEN FINAL DEL LISTADO
-
-		data=new String[7];
-		data[0]="TOTALES";
-		data[1]="";
-		data[2]="";
-		data[3]="";
-		data[4]="BASES";
-		data[5]="CUOTAS";
-		data[6]="IMPORTES";
-		cuerpo.add(data);
-
-		data=new String[7];
-		data[0]="";
-		data[1]="";
-		data[2]="";
-		data[3]="";
-		data[4]=formatoDecimal.format(basTotal);
-		data[5]=formatoDecimal.format(cuoTotal);
-		data[6]=formatoDecimal.format(impTotal);
-		cuerpo.add(data);
 		
 				
 		// PIE
@@ -1596,17 +1633,20 @@ public class PanelCustomersPrinting implements ActionListener, ItemListener {
 			}
 			// obtenemos las facturas que corresponden a los clientes seleccionados
 			listSelectedInvoices=facturas.searchExtractInvoicesByOrderCustomers(listSelectedCustomers);
-			
 			List<String[]> listInvoicesToPrinting=new ArrayList<String[]>();
-			for (String a[]:listSelectedInvoices) {
-
-				if (a[3].compareTo(fecha1)>=0 && a[3].compareTo(fecha2)<=0) {
-					// dentro de las fechas de facturas seleccionadas
-					listInvoicesToPrinting.add(a);			
-				}
+			if (listSelectedInvoices!=null) {
+				for (String a[]:listSelectedInvoices) {
 					
-			}		
-			
+					String fechaList=a[3].substring(8)+a[3].substring(4, 8)+a[3].substring(0, 4);
+					if (fechaList.compareTo(fecha1)>=0 && fechaList.compareTo(fecha2)<=0) {
+						// dentro de las fechas de facturas seleccionadas
+						listInvoicesToPrinting.add(a);			
+					}
+						
+				}
+			}
+		
+
 			showListInvoices(listInvoicesToPrinting,listSelectedCustomers.size());
 		}
 		

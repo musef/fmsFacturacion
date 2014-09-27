@@ -138,8 +138,13 @@ public class PanelInvoicesIva implements ActionListener, ItemListener {
 		// creamos los combobox
 		firstInvoice=new JComboBox<String>();
 		firstInvoice.addItem("Factura inicial... ");
-		listInvoices=facturador.searchExtractInvoices();
-		listSelectedInvoices=facturador.searchExtractInvoices();
+		if ((listInvoices=facturador.searchExtractInvoices())==null) {
+			listInvoices=new ArrayList<String[]>();
+		}
+		if ((listSelectedInvoices=facturador.searchExtractInvoices())==null) {
+			listSelectedInvoices=new ArrayList<String[]>();
+		}
+		;
 		for (String[] list:listInvoices) {
 			firstInvoice.addItem(list[1]);
 		}
@@ -328,7 +333,7 @@ public class PanelInvoicesIva implements ActionListener, ItemListener {
 		
 		// CREAMOS UNA VISUALIZACION DE 25 LINEAS
 		JPanel marcoList=new JPanel();
-		int listRows=listSelectedInvoices.size();
+		int listRows=listSelectedInvoices.size()+4;
 		if (listRows<26) {
 			listRows=26;
 		}
@@ -463,7 +468,7 @@ public class PanelInvoicesIva implements ActionListener, ItemListener {
 		
 				// rellenamos el cuerpo con lineas hasta el minimo de 25, si es que no hay suficientes
 		
-		for (int j=elem;j<22;j++) {
+		for (int j=elem;j<listRows-4;j++) {
 
 			marcoList.add(new JLabel(""));
 			marcoList.add(new JLabel(""));
