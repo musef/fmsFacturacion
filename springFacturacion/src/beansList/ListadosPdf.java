@@ -1372,7 +1372,7 @@ public class ListadosPdf extends UtilsFacturacion {
 	    tableT.addCell("    BASE IMPONIBLE");
 	    tableT.addCell("   RETENC. IRPF");
 	    tableT.addCell("    CUOTA IVA");
-	    tableT.addCell("     TOTAL FACTURA");
+	    tableT.addCell("     TOTAL ALBARÁN");
 	    
 	    tableT.addCell("            "+df.format(albaran.getBaseImponible0()+albaran.getBaseImponible1()+albaran.getBaseImponible2()+albaran.getBaseImponible3()));
 	    tableT.addCell("           "+df.format(albaran.getRetencion()));

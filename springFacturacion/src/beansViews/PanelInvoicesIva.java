@@ -371,6 +371,8 @@ public class PanelInvoicesIva implements ActionListener, ItemListener {
 		// convierte fechas para comparacion
 		String d1=dat1.substring(6)+dat1.substring(2, 6)+dat1.substring(0, 2);
 		String d2=dat2.substring(6)+dat2.substring(2, 6)+dat2.substring(0, 2);		
+		//String d1=dat1;
+		//String d2=dat2;
 		
 		for (String a[]:listSelectedInvoices) {
 			
@@ -381,10 +383,10 @@ public class PanelInvoicesIva implements ActionListener, ItemListener {
 				num=0;
 			}
 			
-		
+			//System.out.println("FECHAS:"+d1+"/"+a[3]+"/"+d2);
 			// Seleccionamos los datos en funcion de los filtros del formulario
 			if (num>=inv1 && num<=inv2 && a[3].compareTo(d1)>=0 && a[3].compareTo(d2)<=0) {
-							
+				
 				String sp=" ";
 				marcoList.add(labelFont(a[2]));
 				marcoList.add(labelFont(a[1]));
@@ -855,12 +857,11 @@ public class PanelInvoicesIva implements ActionListener, ItemListener {
 			
 			if (!dateEsp.checkDate(fecha1)) {
 				fecha1="01-01-"+dateEsp.getDate().substring(6);
-			}
+			} 
 			
 			if (!dateEsp.checkDate(fecha2)) {
 				fecha2="31-12-"+dateEsp.getDate().substring(6);
-			}
-			
+			} 			
 			
 			int sel1=firstInvoice.getSelectedIndex();
 			int sel2=lastInvoice.getSelectedIndex();

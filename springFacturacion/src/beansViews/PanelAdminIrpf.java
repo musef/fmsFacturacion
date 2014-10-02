@@ -68,6 +68,8 @@ public class PanelAdminIrpf implements ActionListener, ItemListener {
 	private Font font1=new Font("SansSerif", Font.BOLD, 20);
 	private Font font2=new Font("SansSerif", Font.BOLD, 16);
 	private Color colorL=Color.BLACK;
+	private final Color ERRORFORM=Color.RED;
+	private final Color OKFORM=Color.WHITE;
 	
 	
 	
@@ -261,6 +263,51 @@ public class PanelAdminIrpf implements ActionListener, ItemListener {
 	} // END OF METHOD PANELPRINCIPAL
 	
 	
+	
+	/**
+	 * Este metodo chequea el formulario y devuelve un false algun campo esta erroneo y faltan datos
+	 * para rellenar. A su vez, resalta en rojo el campo erroneo.
+	 * @return Boolean, TRUE o FALSE según el formulario esté correcto o contenga errores.
+	 */
+	
+	private boolean checkForm() {
+			
+	
+		boolean result=true;
+		
+		nameIrpf.setBackground(OKFORM);
+		tipoIrpf.setBackground(OKFORM);
+		
+		if (nameIrpf.getText().trim().length()<3 || nameIrpf.getText().trim().length()>50) {
+			nameIrpf.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		if (tipoIrpf.getText().trim().length()>6) {
+			tipoIrpf.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		if (tipoIrpf.getText().trim().isEmpty()) {
+			tipoIrpf.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		
+		@SuppressWarnings("unused")
+		double numberF=0;
+		try {
+			numberF=(double)Double.parseDouble(tipoIrpf.getText().trim());
+		} catch (NumberFormatException nf) {
+			tipoIrpf.setBackground(ERRORFORM);
+			result=false;
+		}
+
+		return result;
+	}  // end of checkForm
+	
+	
+	
 	/**
 	 * Crea la ayuda en pantalla
 	 */
@@ -350,62 +397,84 @@ public class PanelAdminIrpf implements ActionListener, ItemListener {
 		//**** LECTURA DE BOTONES DE IRPF
 		
 		if (source.equals("Grabar") && selIrpf.getSelectedIndex()==0 ) {
-			//TiposIrpf newIrpf=new TiposIrpf();
-			if (activoIrpf.isSelected()) {
-				newIrpf.setActiveIrpf(1);
-			} else {
-				newIrpf.setActiveIrpf(0);
-			}
-			newIrpf.setNameIrpf(nameIrpf.getText().trim());
-			newIrpf.setRateIrpf((double)Double.parseDouble(tipoIrpf.getText().trim()));
 			
-			if (destIrpf.getSelectedIndex()==0) {
-				newIrpf.setTypeIrpf(1);
+			if (checkForm()) {
+				//TiposIrpf newIrpf=new TiposIrpf();
+				if (activoIrpf.isSelected()) {
+					newIrpf.setActiveIrpf(1);
+				} else {
+					newIrpf.setActiveIrpf(0);
+				}
+				newIrpf.setNameIrpf(nameIrpf.getText().trim());
+				
+				try {
+					newIrpf.setRateIrpf((double)Double.parseDouble(tipoIrpf.getText().trim()));
+				} catch (NumberFormatException nf) {
+					newIrpf.setRateIrpf(0);
+				}
+				
+				if (destIrpf.getSelectedIndex()==0) {
+					newIrpf.setTypeIrpf(1);
+				} else {
+					newIrpf.setTypeIrpf(2);
+				}
+				
+				newIrpf.setAccIrpf("");
+				if (irpf.createIrpf(newIrpf)) {
+					// muestra mensaje y actualiza las pestañas
+					JOptionPane.showMessageDialog(mainFrame, "El irpf ha sido grabado correctamente", "Grabación de IRPF", JOptionPane.INFORMATION_MESSAGE);
+					reinicia.reinicia(1,4);
+				} else {
+					JOptionPane.showMessageDialog(mainFrame, "Error en la grabación del irpf", "Grabación de IRPF", JOptionPane.ERROR_MESSAGE);
+				}
 			} else {
-				newIrpf.setTypeIrpf(2);
+				JOptionPane.showMessageDialog(mainFrame, "Faltan datos necesarios para crear el irpf\n" +
+						"o hay datos incorrectos en el formulario.", "Grabación de IRPF", JOptionPane.ERROR_MESSAGE);
 			}
-			
-			newIrpf.setAccIrpf("");
-			if (irpf.createIrpf(newIrpf)) {
-				// muestra mensaje y actualiza las pestañas
-				JOptionPane.showMessageDialog(mainFrame, "El irpf ha sido grabado correctamente", "Grabación de IRPF", JOptionPane.INFORMATION_MESSAGE);
-				reinicia.reinicia(1,4);
-			} else {
-				JOptionPane.showMessageDialog(mainFrame, "Error en la grabación del irpf", "Grabación de IRPF", JOptionPane.ERROR_MESSAGE);
-			}
+
 		}
 
 		if (source.equals("Grabar") && selIrpf.getSelectedIndex()>0 ) {
-			//TiposIrpf newIrpf=new TiposIrpf();
-			idIrpf=allIrpf.get(selIrpf.getSelectedIndex()-1)[0];
-			try {
-				newIrpf.setId((long)Long.parseLong(idIrpf));
-			} catch (NumberFormatException nf) {
-				newIrpf.setId(0);
-			}			
-			if (activoIrpf.isSelected()) {
-				newIrpf.setActiveIrpf(1);
+			if (checkForm()) {
+				//TiposIrpf newIrpf=new TiposIrpf();
+				idIrpf=allIrpf.get(selIrpf.getSelectedIndex()-1)[0];
+				try {
+					newIrpf.setId((long)Long.parseLong(idIrpf));
+				} catch (NumberFormatException nf) {
+					newIrpf.setId(0);
+				}			
+				if (activoIrpf.isSelected()) {
+					newIrpf.setActiveIrpf(1);
+				} else {
+					newIrpf.setActiveIrpf(0);
+				}
+				
+				newIrpf.setNameIrpf(nameIrpf.getText().trim());
+				try {
+					newIrpf.setRateIrpf((double)Double.parseDouble(tipoIrpf.getText().trim()));
+				} catch (NumberFormatException nf) {
+					newIrpf.setRateIrpf(0);
+				}
+				
+				if (destIrpf.getSelectedIndex()==0) {
+					newIrpf.setTypeIrpf(1);
+				} else {
+					newIrpf.setTypeIrpf(2);
+				}
+				
+				newIrpf.setAccIrpf("");
+				if (irpf.modifyIrpf(idIrpf, newIrpf)) {
+					// muestra mensaje y actualiza las pestañas
+					JOptionPane.showMessageDialog(mainFrame, "El irpf ha sido modificado correctamente", "Modificación de IRPF", JOptionPane.INFORMATION_MESSAGE);
+					reinicia.reinicia(1,4);
+				} else {
+					JOptionPane.showMessageDialog(mainFrame, "Error en la modificación del irpf", "Modificación de IRPF", JOptionPane.ERROR_MESSAGE);
+				}
 			} else {
-				newIrpf.setActiveIrpf(0);
+				JOptionPane.showMessageDialog(mainFrame, "Faltan datos necesarios para modificar el irpf\n" +
+						"o hay datos incorrectos en el formulario.", "Modificación de IRPF", JOptionPane.ERROR_MESSAGE);
 			}
-			
-			newIrpf.setNameIrpf(nameIrpf.getText().trim());
-			newIrpf.setRateIrpf((double)Double.parseDouble(tipoIrpf.getText().trim()));
-			
-			if (destIrpf.getSelectedIndex()==0) {
-				newIrpf.setTypeIrpf(1);
-			} else {
-				newIrpf.setTypeIrpf(2);
-			}
-			
-			newIrpf.setAccIrpf("");
-			if (irpf.modifyIrpf(idIrpf, newIrpf)) {
-				// muestra mensaje y actualiza las pestañas
-				JOptionPane.showMessageDialog(mainFrame, "El irpf ha sido modificado correctamente", "Modificación de IRPF", JOptionPane.INFORMATION_MESSAGE);
-				reinicia.reinicia(1,4);
-			} else {
-				JOptionPane.showMessageDialog(mainFrame, "Error en la modificación del irpf", "Modificación de IRPF", JOptionPane.ERROR_MESSAGE);
-			}
+
 		}
 		
 		

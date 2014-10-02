@@ -218,20 +218,22 @@ public class PanelDeliveryDeleting implements ActionListener, ItemListener {
 		selDeliveryC.addItem("Seleccione número...");
 		//clienteFac=new ClientesCean();
 		listDeliveryC=albaranes.searchAllDeliveriesPending();
+		if (listDeliveryC==null) {
+			listDeliveryC=new ArrayList<String[]>();
+		}
 		for (String[] data: listDeliveryC) {
 			selDeliveryC.addItem(data[3]);
 		}
 		deliveryNumberC=new JTextField("");
 		deliveryNumberC.setEditable(false);
-		
-		
+				
 		selCustomerInvC=new JComboBox<String>();
 		selCustomerInvC.addItem("Seleccione cliente...");
 		selCustomerInvC.setEnabled(false);
 		nameCustomerInvC=new JTextField("");
 		nameCustomerInvC.setEditable(false);		
 		
-		dateCustomerInvC=new JTextField(dateEsp.getDate());
+		dateCustomerInvC=new JTextField("");
 		dateCustomerInvC.setEditable(false);
 		
 		numberCustomerInvC=new JTextField("");
@@ -654,78 +656,90 @@ public class PanelDeliveryDeleting implements ActionListener, ItemListener {
 		
 		if (source.equals("Borrar albarán")) {
 
-			if (JOptionPane.showConfirmDialog(mainFrame, "¿Desea borrar el albarán seleccionado en el formulario?", "Borrado de albaranes", JOptionPane.YES_NO_OPTION)==0) {
-				String numDel=selDeliveryC.getSelectedItem().toString();
-				// comprueba que el albaran no esta facturado
-				// en realidad el programa no permite borrar un albaran facturado, no lo muestra en el menu
-				if (!albaranes.getDelivery(numDel).getInvoice().isEmpty()) {
+			String numDel=selDeliveryC.getSelectedItem().toString();
+			
+			if (!(numberCustomerInvC.getText().trim().isEmpty() || numberCustomerInvC.getText().trim().equals(""))) {
+				// si hay albaran seleccionado...
+				
+				if (JOptionPane.showConfirmDialog(mainFrame, "¿Desea borrar el albarán seleccionado en el formulario?", "Borrado de albaranes", JOptionPane.YES_NO_OPTION)==0) {
 					
-					if (albaranes.eraseDelivery(numDel)) {
-						JOptionPane.showMessageDialog(mainFrame, "Albarán borrado correctamente","Borrado de albaranes",JOptionPane.INFORMATION_MESSAGE);
-						// mostrando el numero de albaran			
-						nextNumberDelivery=formatoFactura.format(albaranes.getNextNumber());
-						numberCustomerInvC.setText("");
-						dateCustomerInvC.setText("");
+					// comprueba que el albaran no esta facturado
+					// en realidad el programa no permite borrar un albaran facturado, no lo muestra en el menu
+					if (albaranes.getDelivery(numDel).getInvoice().isEmpty()) {
 						
-						// eliminando la lista
-						datosAlbC=new ArrayList<String[]>();
-						listDeliveryC=new ArrayList<String[]>();
-						selDeliveryC=new JComboBox<String>();
-						selDeliveryC.addItem("Seleccione número...");
-						//clienteFac=new ClientesCean();
-						listDeliveryC=albaranes.searchAllDeliveriesPending();
-						for (String[] data: listDeliveryC) {
-							selDeliveryC.addItem(data[1]);
+						if (albaranes.eraseDelivery(numDel)) {
+							JOptionPane.showMessageDialog(mainFrame, "Albarán borrado correctamente","Borrado de albaranes",JOptionPane.INFORMATION_MESSAGE);
+							// mostrando el numero de albaran			
+							nextNumberDelivery=formatoFactura.format(albaranes.getNextNumber());
+							numberCustomerInvC.setText("");
+							dateCustomerInvC.setText("");
+							
+							// eliminando la lista
+							datosAlbC=new ArrayList<String[]>();
+							listDeliveryC=new ArrayList<String[]>();
+							selDeliveryC=new JComboBox<String>();
+							selDeliveryC.addItem("Seleccione número...");
+							//clienteFac=new ClientesCean();
+							listDeliveryC=albaranes.searchAllDeliveriesPending();
+							if (listDeliveryC==null) {
+								listDeliveryC=new ArrayList<String[]>();
+							}
+							for (String[] data: listDeliveryC) {
+								selDeliveryC.addItem(data[1]);
+							}
+							
+							// Eliminando la parte grafica
+							selDeliveryC.setSelectedIndex(0);
+							selCustomerInvC.setSelectedIndex(0);
+							nameCustomerInvC.setText("");
+							
+							//numberOpC.setSelectedIndex(0);
+							textOpC.setText("");
+							qttOpC.setText("");
+							priceOpC.setText("");
+							//ivaOpC.setSelectedIndex(0);
+							amountOpC.setText("");
+							
+							cod1C.setText("");
+							tex1C.setText("");
+							ud1C.setText("");
+							price1C.setText("");
+							iva1C.setText("");
+							imp1C.setText("");
+							cod2C.setText("");
+							tex2C.setText("");
+							ud2C.setText("");
+							price2C.setText("");
+							iva2C.setText("");
+							imp2C.setText("");
+							cod3C.setText("");
+							tex3C.setText("");
+							ud3C.setText("");
+							price3C.setText("");
+							iva3C.setText("");
+							imp3C.setText("");
+							
+							baseImpC.setText("");
+							cuotaIvaC.setText("");
+							importeTotalC.setText("");
+							
+							// se actualizan pestañas
+							reinicia.reinicia(3,3);
+							
+						} else {
+							JOptionPane.showMessageDialog(mainFrame, "Error en borrado de albarán","Borrado de albaranes",JOptionPane.ERROR_MESSAGE);
 						}
-						
-						// Eliminando la parte grafica
-						selDeliveryC.setSelectedIndex(0);
-						selCustomerInvC.setSelectedIndex(0);
-						nameCustomerInvC.setText("");
-						
-						//numberOpC.setSelectedIndex(0);
-						textOpC.setText("");
-						qttOpC.setText("");
-						priceOpC.setText("");
-						//ivaOpC.setSelectedIndex(0);
-						amountOpC.setText("");
-						
-						cod1C.setText("");
-						tex1C.setText("");
-						ud1C.setText("");
-						price1C.setText("");
-						iva1C.setText("");
-						imp1C.setText("");
-						cod2C.setText("");
-						tex2C.setText("");
-						ud2C.setText("");
-						price2C.setText("");
-						iva2C.setText("");
-						imp2C.setText("");
-						cod3C.setText("");
-						tex3C.setText("");
-						ud3C.setText("");
-						price3C.setText("");
-						iva3C.setText("");
-						imp3C.setText("");
-						
-						baseImpC.setText("");
-						cuotaIvaC.setText("");
-						importeTotalC.setText("");
-						
-						// se actualizan pestañas
-						reinicia.reinicia(3,3);
-						
 					} else {
-						JOptionPane.showMessageDialog(mainFrame, "Error en borrado de albarán","Borrado de albaranes",JOptionPane.ERROR_MESSAGE);
-					}
-				} else {
-					JOptionPane.showMessageDialog(mainFrame, "No es posible borrar este albarán\n" +
-							"porque está facturado.\n\nSi quiere borrarlo, primero deberá\n" +
-							"eliminarlo de la factura.","Borrado de albaranes",JOptionPane.ERROR_MESSAGE);
-				}
-					
-			}	
+						JOptionPane.showMessageDialog(mainFrame, "No es posible borrar este albarán\n" +
+								"porque está facturado.\n\nSi quiere borrarlo, primero deberá\n" +
+								"eliminarlo de la factura.","Borrado de albaranes",JOptionPane.ERROR_MESSAGE);
+					}			
+				}	
+
+			} else {
+				JOptionPane.showMessageDialog(mainFrame, "Debe seleccionar un albarán para eliminar.","Borrado de albaranes",JOptionPane.ERROR_MESSAGE);
+			} 
+			
 		}  // end of borrar albaran
 		
 		
@@ -741,7 +755,49 @@ public class PanelDeliveryDeleting implements ActionListener, ItemListener {
 		if (selDeliveryC!=null && selDeliveryC.getSelectedIndex()!=0) {
 			String data=String.valueOf(selDeliveryC.getSelectedItem());
 			deliveryToErase=albaranes.getDelivery(data);
-			showDeliveryToErase(deliveryToErase);
+			if (deliveryToErase!=null) {
+				// muestra el albaran
+				showDeliveryToErase(deliveryToErase);
+			}			
+		}
+		
+		if (selDeliveryC!=null && selDeliveryC.getSelectedIndex()==0) {
+			// Eliminando la parte grafica
+
+			selCustomerInvC.setSelectedIndex(0);
+			nameCustomerInvC.setText("");
+			dateCustomerInvC.setText("");
+			numberCustomerInvC.setText("");
+			
+			//numberOpC.setSelectedIndex(0);
+			textOpC.setText("");
+			qttOpC.setText("");
+			priceOpC.setText("");
+			//ivaOpC.setSelectedIndex(0);
+			amountOpC.setText("");
+			
+			cod1C.setText("");
+			tex1C.setText("");
+			ud1C.setText("");
+			price1C.setText("");
+			iva1C.setText("");
+			imp1C.setText("");
+			cod2C.setText("");
+			tex2C.setText("");
+			ud2C.setText("");
+			price2C.setText("");
+			iva2C.setText("");
+			imp2C.setText("");
+			cod3C.setText("");
+			tex3C.setText("");
+			ud3C.setText("");
+			price3C.setText("");
+			iva3C.setText("");
+			imp3C.setText("");
+			
+			baseImpC.setText("");
+			cuotaIvaC.setText("");
+			importeTotalC.setText("");
 		}
 		
 	} // end of itemStateChanged

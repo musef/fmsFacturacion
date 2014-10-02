@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -153,7 +154,8 @@ public class PanelCustomersCreating implements ActionListener, ItemListener {
 
 		//pagos=new PagosBean();
 		if ((custPagos=pagosCust.getListPago())==null) {
-			custPagos.add(new String[5]);
+			custPagos=new ArrayList<String[]>();
+			//custPagos.add(new String[5]);
 		}
 		getPay=new JComboBox<String>();
 		getPay.addItem("Seleccione pago");
@@ -331,8 +333,6 @@ public class PanelCustomersCreating implements ActionListener, ItemListener {
 		
 		boolean result=true;
 		
-		
-			
 			nameF.setBackground(OKFORM);
 			addressF.setBackground(OKFORM);
 			cityF.setBackground(OKFORM);

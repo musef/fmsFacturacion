@@ -238,11 +238,19 @@ public class PanelInvoicesDeleting implements ActionListener, ItemListener {
 		
 		selCustomerInvC=new JComboBox<String>();
 		selCustomerInvC.addItem("Seleccione cliente...");
+		
 		//clienteFac=new ClientesCean();
 		listClientesFacC=clienteFac.getListCustomers();
+		if (listClientesFacC==null) {
+			listClientesFacC=new ArrayList<String[]>();
+		}
+		
+		selCustomerInvC.setEnabled(false);
+		/*
 		for (String[] data: listClientesFacC) {
 			selCustomerInvC.addItem(data[2]);
 		}
+		*/
 		nameCustomerInvC=new JTextField("");
 		nameCustomerInvC.setEditable(false);		
 		
@@ -597,7 +605,7 @@ public class PanelInvoicesDeleting implements ActionListener, ItemListener {
 		
 		// habilitamos los listener de los eventos
 		selInvoiceC.addItemListener(this);
-		selCustomerInvC.addItemListener(this);
+		//selCustomerInvC.addItemListener(this);
 		borrarFC.addActionListener(this);
 		anadirFC.addActionListener(this);
 		info.addActionListener(this);
@@ -746,101 +754,110 @@ public class PanelInvoicesDeleting implements ActionListener, ItemListener {
 		String source=e.getActionCommand();
 		
 		if (source.equals("Borrar factura")) {
+			
+			if (!(numberCustomerInvC.getText().trim().isEmpty() || numberCustomerInvC.getText().trim().equals(""))) {
+				// si hay factura seleccionada...
+				if (JOptionPane.showConfirmDialog(mainFrame, "¿Desea borrar la factura seleccionada en el formulario?", "Borrado de facturas", JOptionPane.YES_NO_OPTION)==0) {
+					String numDel=selInvoiceC.getSelectedItem().toString();
 
-			if (JOptionPane.showConfirmDialog(mainFrame, "¿Desea borrar la factura seleccionada en el formulario?", "Borrado de facturas", JOptionPane.YES_NO_OPTION)==0) {
-				String numDel=selInvoiceC.getSelectedItem().toString();
-
-				if (facturador.eraseInvoice(numDel, SpringFacturacion.serialInvoices)) {
-					
-					// una vez borrada la factura, revisamos los albaranes grabados.
-					// los datos de introduccion directa (999999) los ignoramos
-					// los albaranes grabados (distintos de 999999) los pasamos a pendiente
-					for (String a[]:invoiceToErase.getDataInvoice()) {
-						if (!(a[0].equals("999999"))) {
-							if (!albaranes.changeToPendingState(a[0])) {
-								// si algun albaran no pudo pasar a pendiente por error
-								JOptionPane.showMessageDialog(mainFrame, "Algún albarán no pudo dejarse pendiente.\nRevise la factura borrada y\n" +
-										"compruebe que todos los albaranes están\n" +
-										"ahora pendientes.","Borrado de facturas",JOptionPane.ERROR_MESSAGE);
-							}						
+					if (facturador.eraseInvoice(numDel, SpringFacturacion.serialInvoices)) {
+						
+						// una vez borrada la factura, revisamos los albaranes grabados.
+						// los datos de introduccion directa (999999) los ignoramos
+						// los albaranes grabados (distintos de 999999) los pasamos a pendiente
+						for (String a[]:invoiceToErase.getDataInvoice()) {
+							if (!(a[0].equals("999999"))) {
+								if (!albaranes.changeToPendingState(a[0])) {
+									// si algun albaran no pudo pasar a pendiente por error
+									JOptionPane.showMessageDialog(mainFrame, "Algún albarán no pudo dejarse pendiente.\nRevise la factura borrada y\n" +
+											"compruebe que todos los albaranes están\n" +
+											"ahora pendientes.","Borrado de facturas",JOptionPane.ERROR_MESSAGE);
+								}						
+							} 
+						}
+						
+						JOptionPane.showMessageDialog(mainFrame, "Factura borrada correctamente","Borrado de facturas",JOptionPane.INFORMATION_MESSAGE);
+						// mostrando el numero de factura			
+						if (numDel.equals(formatoFactura.format(SpringFacturacion.lastInvoiceNumber))) {
+							// si la borrada fue el ultimo numero de factura, podemos utilizar ese numero, retrocedemos
+							// y lo mostramos como siguiente valido para grabar
+							SpringFacturacion.lastInvoiceNumber=SpringFacturacion.lastInvoiceNumber-1;
 						} 
-					}
-					
-					JOptionPane.showMessageDialog(mainFrame, "Factura borrada correctamente","Borrado de facturas",JOptionPane.INFORMATION_MESSAGE);
-					// mostrando el numero de factura			
-					if (numDel.equals(formatoFactura.format(SpringFacturacion.lastInvoiceNumber))) {
-						// si la borrada fue el ultimo numero de factura, podemos utilizar ese numero, retrocedemos
-						// y lo mostramos como siguiente valido para grabar
-						SpringFacturacion.lastInvoiceNumber=SpringFacturacion.lastInvoiceNumber-1;
-					} 
-					
-					nextNumberFact=formatoFactura.format(SpringFacturacion.lastInvoiceNumber+1);
-					numberCustomerInvC.setText("");
-					dateCustomerInvC.setText("");
-					
-					// eliminando la lista
-					datosFactC=new ArrayList<String[]>();
-					listInvoiceC=new ArrayList<String[]>();
-					selInvoiceC=new JComboBox<String>();
-					selInvoiceC.addItem("Seleccione número...");
-					
-					if ((listInvoiceC=facturador.searchAllInvoiceNumber())==null) {
+						
+						nextNumberFact=formatoFactura.format(SpringFacturacion.lastInvoiceNumber+1);
+						numberCustomerInvC.setText("");
+						dateCustomerInvC.setText("");
+						
+						// eliminando la lista
+						datosFactC=new ArrayList<String[]>();
 						listInvoiceC=new ArrayList<String[]>();
-					}
-					for (String[] data: listInvoiceC) {
-						selInvoiceC.addItem(data[1]);
-					}
-					
-					// Eliminando la parte grafica
-					selInvoiceC.setSelectedIndex(0);
-					selCustomerInvC.setSelectedIndex(0);
-					nameCustomerInvC.setText("");
-					
-					//numberOpC.setSelectedIndex(0);
-					textOpC.setText("");
-					qttOpC.setText("");
-					priceOpC.setText("");
-					//ivaOpC.setSelectedIndex(0);
-					amountOpC.setText("");
-					
-					cod1C.setText("");
-					tex1C.setText("");
-					ud1C.setText("");
-					price1C.setText("");
-					iva1C.setText("");
-					imp1C.setText("");
-					cod2C.setText("");
-					tex2C.setText("");
-					ud2C.setText("");
-					price2C.setText("");
-					iva2C.setText("");
-					imp2C.setText("");
-					cod3C.setText("");
-					tex3C.setText("");
-					ud3C.setText("");
-					price3C.setText("");
-					iva3C.setText("");
-					imp3C.setText("");
-					cod4C.setText("");
-					tex4C.setText("");
-					ud4C.setText("");
-					price4C.setText("");
-					iva4C.setText("");
-					imp4C.setText("");
-					cod5C.setText("");
-					tex5C.setText("");
-					ud5C.setText("");
-					price5C.setText("");
-					iva5C.setText("");
-					imp5C.setText("");
-					
-					baseImpC.setText("");
-					cuotaIvaC.setText("");
-					importeTotalC.setText("");
-				} else {
-					JOptionPane.showMessageDialog(mainFrame, "Error en borrado de factura","Borrado de facturas",JOptionPane.ERROR_MESSAGE);
-				}	
-			}	
+						selInvoiceC=new JComboBox<String>();
+						selInvoiceC.addItem("Seleccione número...");
+						
+						if ((listInvoiceC=facturador.searchAllInvoiceNumber())==null) {
+							listInvoiceC=new ArrayList<String[]>();
+						}
+						for (String[] data: listInvoiceC) {
+							selInvoiceC.addItem(data[1]);
+						}
+						
+						// Eliminando la parte grafica
+						selInvoiceC.setSelectedIndex(0);
+						selCustomerInvC.setSelectedIndex(0);
+						nameCustomerInvC.setText("");
+						
+						//numberOpC.setSelectedIndex(0);
+						textOpC.setText("");
+						qttOpC.setText("");
+						priceOpC.setText("");
+						//ivaOpC.setSelectedIndex(0);
+						amountOpC.setText("");
+						
+						cod1C.setText("");
+						tex1C.setText("");
+						ud1C.setText("");
+						price1C.setText("");
+						iva1C.setText("");
+						imp1C.setText("");
+						cod2C.setText("");
+						tex2C.setText("");
+						ud2C.setText("");
+						price2C.setText("");
+						iva2C.setText("");
+						imp2C.setText("");
+						cod3C.setText("");
+						tex3C.setText("");
+						ud3C.setText("");
+						price3C.setText("");
+						iva3C.setText("");
+						imp3C.setText("");
+						cod4C.setText("");
+						tex4C.setText("");
+						ud4C.setText("");
+						price4C.setText("");
+						iva4C.setText("");
+						imp4C.setText("");
+						cod5C.setText("");
+						tex5C.setText("");
+						ud5C.setText("");
+						price5C.setText("");
+						iva5C.setText("");
+						imp5C.setText("");
+						
+						baseImpC.setText("");
+						cuotaIvaC.setText("");
+						importeTotalC.setText("");
+					} else {
+						JOptionPane.showMessageDialog(mainFrame, "Error en borrado de factura","Borrado de facturas",JOptionPane.ERROR_MESSAGE);
+					}	
+				}
+			} else {
+				JOptionPane.showMessageDialog(mainFrame, "Debe seleccionar una factura para borrar.","Borrado de facturas",JOptionPane.ERROR_MESSAGE);
+			}
+				
+				
+
+	
 		}  // end of borrar factura
 		
 		
@@ -859,7 +876,59 @@ public class PanelInvoicesDeleting implements ActionListener, ItemListener {
 			showInvoiceToErase(invoiceToErase);
 		}
 		
+		if (selInvoiceC!=null && selInvoiceC.getSelectedIndex()==0) {
+			// Eliminando la parte grafica
+
+			selCustomerInvC.setSelectedIndex(0);
+			nameCustomerInvC.setText("");
+			dateCustomerInvC.setText("");
+			numberCustomerInvC.setText("");
+			
+			//numberOpC.setSelectedIndex(0);
+			textOpC.setText("");
+			qttOpC.setText("");
+			priceOpC.setText("");
+			//ivaOpC.setSelectedIndex(0);
+			amountOpC.setText("");
+			
+			cod1C.setText("");
+			tex1C.setText("");
+			ud1C.setText("");
+			price1C.setText("");
+			iva1C.setText("");
+			imp1C.setText("");
+			cod2C.setText("");
+			tex2C.setText("");
+			ud2C.setText("");
+			price2C.setText("");
+			iva2C.setText("");
+			imp2C.setText("");
+			cod3C.setText("");
+			tex3C.setText("");
+			ud3C.setText("");
+			price3C.setText("");
+			iva3C.setText("");
+			imp3C.setText("");
+			cod4C.setText("");
+			tex4C.setText("");
+			ud4C.setText("");
+			price4C.setText("");
+			iva4C.setText("");
+			imp4C.setText("");
+			cod5C.setText("");
+			tex5C.setText("");
+			ud5C.setText("");
+			price5C.setText("");
+			iva5C.setText("");
+			imp5C.setText("");
+			
+			baseImpC.setText("");
+			cuotaIvaC.setText("");
+			importeTotalC.setText("");
+		}
+		
 	} // end of itemStateChanged
+	
 	
 	
 

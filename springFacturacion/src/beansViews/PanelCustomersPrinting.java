@@ -145,6 +145,10 @@ public class PanelCustomersPrinting implements ActionListener, ItemListener {
 		firstCustomer.addItem("Cliente inicial... ");
 		listCustomers=listCustomers();
 		listSelectedCustomers=listCustomers();
+		if (listSelectedCustomers==null) {
+			listCustomers=new ArrayList<String[]>();
+			listSelectedCustomers=new ArrayList<String[]>();
+		}
 		for (String[] list:listCustomers) {
 			firstCustomer.addItem(list[2]);
 		}		
@@ -544,6 +548,10 @@ public class PanelCustomersPrinting implements ActionListener, ItemListener {
 		lastCustomer=new JComboBox<String>();
 
 		firstCustomer.addItem("Cliente inicial... ");
+		if (listCustomers==null) {
+			listCustomers=new ArrayList<String[]>();
+			listSelectedCustomers=new ArrayList<String[]>();
+		}
 		for (String a[]:listCustomers) {
 			firstCustomer.addItem(a[2]);
 		}
@@ -702,18 +710,19 @@ public class PanelCustomersPrinting implements ActionListener, ItemListener {
 	} // end of printInvoices
 		
 	
-
+	
 	/**
 	 * Este metodo muestra una JFrame con el listado de facturas de clientes seleccionados, 
 	 * ordenadas por clientes y sumadas. Permite la opcion para imprimir en PDF o en TXT 
 	 * 
-	 * @param listSelectedInvoices - List, conteniendo la lista de las facturas de los clientes seleccionados.
-	 * @param date1 - String, con la fecha de inicio del listado en formato dd-MM-yyyy
-	 * @param date2 - String, con la fecha de final del listado en formato dd-MM-yyyy
+	 * @param listInvoicesToPrinting - List, conteniendo la lista de las facturas de los clientes seleccionados.
+	 * @param numberCustomers - int, conteniendo el número de clientes a listar. Necesario para control sumas parciales.
+	 * @param date1 - String, con la fecha de inicio del listado.
+	 * @param date2 - String, con la fecha de final del listado.
 	 * @return Boolean, TRUE o FALSE con el resultado de la generación del fichero.
 	 */
 	
-	private JFrame showListInvoices(List<String[]>listInvoicesToPrinting, int numberCustomers) {
+	private JFrame showListInvoices(List<String[]>listInvoicesToPrinting, int numberCustomers, String date1, String date2) {
 		
 		JFrame frameList=new JFrame("Listado de clientes");
 		frameList.setBounds(25, 25, 900, 700);
@@ -727,7 +736,8 @@ public class PanelCustomersPrinting implements ActionListener, ItemListener {
 
 		// CABECERA
 		JPanel marcoTit=new JPanel();
-		JLabel title=new JLabel("LISTADO DE FACTURAS POR CLIENTES");
+		JLabel title=new JLabel("LISTADO DE FACTURAS POR CLIENTES del "+date1.substring(8)+date1.substring(4,8)+date1.substring(0,4)
+				+" al "+date2.substring(8)+date2.substring(4,8)+date2.substring(0,4));
 		title.setFont(font1);
 		marcoTit.add(title);
 		
@@ -1036,7 +1046,7 @@ public class PanelCustomersPrinting implements ActionListener, ItemListener {
 		
 		
 		// CABECERA
-		String title="LISTADO DE FACTURAS POR CLIENTES;\n\n";
+		String title="LISTADO DE FACTURAS POR CLIENTES del "+date1+" al "+date2+";\n\n";
 		
 		// CUERPO
 		
@@ -1246,7 +1256,7 @@ public class PanelCustomersPrinting implements ActionListener, ItemListener {
 	private boolean generatesPdfListInvoices(List<String[]>listSelectedInvoices, String date1, String date2) {
 		
 		// CABECERA
-		String titulo="LISTADO DE FACTURAS POR CLIENTES\n\n";
+		String titulo="LISTADO DE FACTURAS POR CLIENTES del "+date1+" al "+date2+"\n\n";
 		
 		// CUERPO
 		List<String[]> cuerpo=new ArrayList<String[]>();
@@ -1625,19 +1635,24 @@ public class PanelCustomersPrinting implements ActionListener, ItemListener {
 			String fecha2=lastDate.getText().trim();
 			
 			if (!today.checkDate(fecha1)) {
-				fecha1="01-01-"+today.getDate().substring(6);
+				fecha1=today.getDate().substring(6)+"-01-01";
+			} else {
+				fecha1=fecha1.substring(6)+fecha1.substring(2,6)+fecha1.substring(0,2);
 			}
 			
 			if (!today.checkDate(fecha2)) {
-				fecha2="31-12-"+today.getDate().substring(6);
+				fecha2=today.getDate().substring(6)+"-12-31";
+			} else {
+				fecha2=fecha2.substring(6)+fecha2.substring(2,6)+fecha2.substring(0,2);
 			}
+			
 			// obtenemos las facturas que corresponden a los clientes seleccionados
 			listSelectedInvoices=facturas.searchExtractInvoicesByOrderCustomers(listSelectedCustomers);
 			List<String[]> listInvoicesToPrinting=new ArrayList<String[]>();
 			if (listSelectedInvoices!=null) {
 				for (String a[]:listSelectedInvoices) {
 					
-					String fechaList=a[3].substring(8)+a[3].substring(4, 8)+a[3].substring(0, 4);
+					String fechaList=a[3];
 					if (fechaList.compareTo(fecha1)>=0 && fechaList.compareTo(fecha2)<=0) {
 						// dentro de las fechas de facturas seleccionadas
 						listInvoicesToPrinting.add(a);			
@@ -1647,7 +1662,7 @@ public class PanelCustomersPrinting implements ActionListener, ItemListener {
 			}
 		
 
-			showListInvoices(listInvoicesToPrinting,listSelectedCustomers.size());
+			showListInvoices(listInvoicesToPrinting,listSelectedCustomers.size(),fecha1,fecha2);
 		}
 		
 		

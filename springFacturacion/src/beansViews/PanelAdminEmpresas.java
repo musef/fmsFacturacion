@@ -315,7 +315,7 @@ public class PanelAdminEmpresas implements ActionListener {
 	/**
 	 * Este metodo chequea el formulario y devuelve un false algun campo esta erroneo y faltan datos
 	 * para rellenar. A su vez, resalta en rojo el campo erroneo.
-	 * @return
+	 * @return Boolean, TRUE o FALSE según el formulario esté correcto o contenga errores.
 	 */
 	
 	private boolean checkForm() {
@@ -348,7 +348,7 @@ public class PanelAdminEmpresas implements ActionListener {
 		}
 		
 		if (codeF.getText().trim().length()!=5) {
-			addressF.setBackground(ERRORFORM);
+			codeF.setBackground(ERRORFORM);
 			result=false;
 		}
 		
@@ -512,7 +512,11 @@ public class PanelAdminEmpresas implements ActionListener {
 						}
 					
 				}
+			} else {
+				JOptionPane.showMessageDialog(mainFrame, "Faltan datos necesarios para crear la empresa\n" +
+						"o hay datos incorrectos en el formulario.", "Grabación de datos Empresa", JOptionPane.ERROR_MESSAGE);
 			}
+			
 		}		// end of grabar empresa
 		
 		

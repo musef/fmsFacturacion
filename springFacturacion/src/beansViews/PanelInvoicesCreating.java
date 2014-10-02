@@ -273,6 +273,9 @@ public class PanelInvoicesCreating extends UtilsFacturacion implements ActionLis
 		selCustomerInv.addItem("Seleccione cliente...");
 		//clienteFac=new ClientesBean();
 		listClientesFac=clienteFac.getListCustomers();
+		if (listClientesFac==null) {
+			listClientesFac=new ArrayList<String[]>();
+		}
 		for (String[] data: listClientesFac) {
 			selCustomerInv.addItem(data[2]);
 		}
@@ -655,6 +658,59 @@ public class PanelInvoicesCreating extends UtilsFacturacion implements ActionLis
 				
 	} // end of method makeInvoice
 		
+	
+	
+	/**
+	 * Este método realiza un chequeo de los datos de la factura. Si detecta un
+	 * error, devuelve un false, e ilumina la casilla del formulario de creación facturas.
+	 * 
+	 * @return boolean TRUE or FALSE según el formulario esté correcto o haya errores.
+	 */
+	
+	private boolean checkFinalForm () {
+		
+		boolean result=true;
+		
+		nameCustomerInv.setBackground(OKFORM);
+		dateCustomerInv.setBackground(OKFORM);
+		numberCustomerInv.setBackground(OKFORM);
+		importeTotal.setBackground(OKFORM);
+		
+		if (nameCustomerInv.getText().trim().isEmpty()) {
+			nameCustomerInv.setBackground(ERRORFORM);
+			result=false;
+		}
+				
+		if (!dateEsp.checkDate(dateCustomerInv.getText().trim())) {
+			dateCustomerInv.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		if (numberCustomerInv.getText().trim().isEmpty()) {
+			numberCustomerInv.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		// Si no hay texto en tex1 es que la factura está en blanco. No se admiten facturas sin importe
+
+		if (tex1.getText().trim().isEmpty()) {
+			result=false;
+		}
+
+		if (importeTotal.getText().trim().isEmpty()) {
+			importeTotal.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		if (convertToNumber(importeTotal.getText().trim())==0) {
+			importeTotal.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		return result;
+		
+	} // end of method checkFinalForm
+	
 
 
 	/**
@@ -1109,211 +1165,218 @@ public class PanelInvoicesCreating extends UtilsFacturacion implements ActionLis
 		
 		if (source.equals("Grabar factura")) {	
 			
-			if (JOptionPane.showConfirmDialog(mainFrame, "¿Desea grabar la factura que ha introducido en el formulario?", "Grabación de la factura", JOptionPane.YES_NO_OPTION)==0) {
+			if (checkFinalForm()) {
 				
-				// vuelve a calcular las bases
-				calculBases();
-				
-				// creacion del objeto factura
-				//Facturas datosF=new Facturas();
-				String numbIv=numberCustomerInv.getText().trim();
-				numbIv=numbIv.substring(numbIv.length()-6);
-				datosF.setNumber(numbIv);
-				datosF.setSerial(SpringFacturacion.serialInvoices);
-				String dateToRecord=dateCustomerInv.getText().trim().substring(6)+dateCustomerInv.getText().trim().substring(2,6)+dateCustomerInv.getText().trim().substring(0,2);
-				datosF.setDateF(Date.valueOf(dateToRecord));
-				datosF.setCodeCompany(SpringFacturacion.idCompany);
-				datosF.setNameCompany(SpringFacturacion.nameCompany);
-				datosF.setAddressCompany(SpringFacturacion.addressCompany);
-				datosF.setPostalCompany(SpringFacturacion.cpostalCompany);
-				datosF.setCityCompany(SpringFacturacion.cityCompany);
-				datosF.setNifCompany(SpringFacturacion.nifCompany);
-				
-				datosF.setCodeCustomer(selectedCustomer);
-				datosF.setNameCustomer(nameCustomerInv.getText().trim());
-				
-				datosF.setAddressCustomer(listClientesFac.get(indexCustomer)[3]);
-				datosF.setPostalCustomer(listClientesFac.get(indexCustomer)[4]);
-				datosF.setCityCustomer(listClientesFac.get(indexCustomer)[5]);
-				datosF.setNifCustomer(listClientesFac.get(indexCustomer)[6]);
-				
-				datosF.setBaseImponible0(base0);
-				datosF.setBaseImponible1(base1);
-				datosF.setTipoIva1(tipoIva1);
-				datosF.setIva1(cuota1);
-				datosF.setBaseImponible2(base2);
-				datosF.setTipoIva2(tipoIva2);
-				datosF.setIva2(cuota2);
-				datosF.setBaseImponible3(base3);
-				datosF.setTipoIva3(tipoIva3);
-				datosF.setIva3(cuota3);
-				datosF.setTipoRet(SpringFacturacion.retInvoices);
-				datosF.setRetencion(retencI);
-				datosF.setTotalFactura(baseI+cuotaI-retencI);
-				
-				String paiment=listClientesFac.get(indexCustomer)[7];
-				datosF.setDiaPago("");
-				if (paiment!=null && !paiment.isEmpty()) {
-					String datosPago[]=formaPago.getPago(paiment);
-					if (datosPago==null) {
-						datosPago=new String[5];
-					}
-					datosF.setFormaPago(datosPago[2]);
-					if (!datosPago[3].isEmpty() && !datosPago[3].equals("0")) {
-						int diaPago=0;
-						try {
-							diaPago=(int)Integer.valueOf(datosPago[4]);
-						} catch (NumberFormatException nf) {
-							diaPago=0;
+				if (JOptionPane.showConfirmDialog(mainFrame, "¿Desea grabar la factura que ha introducido en el formulario?", "Grabación de la factura", JOptionPane.YES_NO_OPTION)==0) {
+					
+					// vuelve a calcular las bases
+					calculBases();
+					
+					// creacion del objeto factura
+					//Facturas datosF=new Facturas();
+					String numbIv=numberCustomerInv.getText().trim();
+					numbIv=numbIv.substring(numbIv.length()-6);
+					datosF.setNumber(numbIv);
+					datosF.setSerial(SpringFacturacion.serialInvoices);
+					String dateToRecord=dateCustomerInv.getText().trim().substring(6)+dateCustomerInv.getText().trim().substring(2,6)+dateCustomerInv.getText().trim().substring(0,2);
+					datosF.setDateF(Date.valueOf(dateToRecord));
+					datosF.setCodeCompany(SpringFacturacion.idCompany);
+					datosF.setNameCompany(SpringFacturacion.nameCompany);
+					datosF.setAddressCompany(SpringFacturacion.addressCompany);
+					datosF.setPostalCompany(SpringFacturacion.cpostalCompany);
+					datosF.setCityCompany(SpringFacturacion.cityCompany);
+					datosF.setNifCompany(SpringFacturacion.nifCompany);
+					
+					datosF.setCodeCustomer(selectedCustomer);
+					datosF.setNameCustomer(nameCustomerInv.getText().trim());
+					
+					datosF.setAddressCustomer(listClientesFac.get(indexCustomer)[3]);
+					datosF.setPostalCustomer(listClientesFac.get(indexCustomer)[4]);
+					datosF.setCityCustomer(listClientesFac.get(indexCustomer)[5]);
+					datosF.setNifCustomer(listClientesFac.get(indexCustomer)[6]);
+					
+					datosF.setBaseImponible0(base0);
+					datosF.setBaseImponible1(base1);
+					datosF.setTipoIva1(tipoIva1);
+					datosF.setIva1(cuota1);
+					datosF.setBaseImponible2(base2);
+					datosF.setTipoIva2(tipoIva2);
+					datosF.setIva2(cuota2);
+					datosF.setBaseImponible3(base3);
+					datosF.setTipoIva3(tipoIva3);
+					datosF.setIva3(cuota3);
+					datosF.setTipoRet(SpringFacturacion.retInvoices);
+					datosF.setRetencion(retencI);
+					datosF.setTotalFactura(baseI+cuotaI-retencI);
+					
+					String paiment=listClientesFac.get(indexCustomer)[7];
+					datosF.setDiaPago("");
+					if (paiment!=null && !paiment.isEmpty()) {
+						String datosPago[]=formaPago.getPago(paiment);
+						if (datosPago==null) {
+							datosPago=new String[5];
 						}
-						int aplaz=0;
-						try {
-							aplaz=(int)Integer.valueOf(datosPago[3]);
-						} catch (NumberFormatException nf) {
-							aplaz=0;
-						}						
-						datosF.setDiaPago(dateEsp.paymentDay(dateCustomerInv.getText().trim(), aplaz, diaPago));
+						datosF.setFormaPago(datosPago[2]);
+						if (!datosPago[3].isEmpty() && !datosPago[3].equals("0")) {
+							int diaPago=0;
+							try {
+								diaPago=(int)Integer.valueOf(datosPago[4]);
+							} catch (NumberFormatException nf) {
+								diaPago=0;
+							}
+							int aplaz=0;
+							try {
+								aplaz=(int)Integer.valueOf(datosPago[3]);
+							} catch (NumberFormatException nf) {
+								aplaz=0;
+							}						
+							datosF.setDiaPago(dateEsp.paymentDay(dateCustomerInv.getText().trim(), aplaz, diaPago));
+						}
+						
+					} else {
+						datosF.setFormaPago("");
 					}
 					
-				} else {
-					datosF.setFormaPago("");
-				}
-				
-				datosF.setDataInvoice(datosFact);
-				
-				// grabando la factura
-				//factura=new FacturasBean();
-				if (facturador.createInvoice(datosF)) {
-					JOptionPane.showMessageDialog(mainFrame, "Factura grabada correctamente","Grabación de facturas",JOptionPane.INFORMATION_MESSAGE);
-				
-					// dando de baja los albaranes
-					for (String a[]:datosFact) {
-						if (!a[0].equals(CODEDIRECT)) {
-							String numFact=datosF.getNumber();
-							if (!datosF.getSerial().isEmpty()) {
-								if (serieFact.isEmpty()) {
-									numFact=datosF.getNumber();
-								} else {
-									numFact=datosF.getSerial()+"/"+datosF.getNumber();
+					datosF.setDataInvoice(datosFact);
+					
+					// grabando la factura
+					//factura=new FacturasBean();
+					if (facturador.createInvoice(datosF)) {
+						JOptionPane.showMessageDialog(mainFrame, "Factura grabada correctamente","Grabación de facturas",JOptionPane.INFORMATION_MESSAGE);
+					
+						// dando de baja los albaranes
+						for (String a[]:datosFact) {
+							if (!a[0].equals(CODEDIRECT)) {
+								String numFact=datosF.getNumber();
+								if (!datosF.getSerial().isEmpty()) {
+									if (serieFact.isEmpty()) {
+										numFact=datosF.getNumber();
+									} else {
+										numFact=datosF.getSerial()+"/"+datosF.getNumber();
+									}
+								}
+								if (!albaranes.changeToInvoicedState(a[0], numFact)) {
+									JOptionPane.showMessageDialog(mainFrame, "Error dando de baja albarán",
+											"Grabación de facturas",JOptionPane.WARNING_MESSAGE);
 								}
 							}
-							if (!albaranes.changeToInvoicedState(a[0], numFact)) {
-								JOptionPane.showMessageDialog(mainFrame, "Error dando de baja albarán",
-										"Grabación de facturas",JOptionPane.WARNING_MESSAGE);
+						}
+						
+						// cambiando el numero de factura			
+						
+						int numf=0;
+						try {
+							numf=(int)Integer.parseInt((numbIv));
+						} catch (NumberFormatException nf) {
+							// do nothing
+							System.err.println("ERROR: "+numbIv+" no es posible transformar en número");
+						}
+
+						if (numf==(SpringFacturacion.lastInvoiceNumber+1)) {
+							SpringFacturacion.lastInvoiceNumber=SpringFacturacion.lastInvoiceNumber+1;
+						} 
+						
+						nextNumberFact=formatoFactura.format(SpringFacturacion.lastInvoiceNumber+1);
+						if (serieFact.isEmpty()) {
+							numberCustomerInv.setText(nextNumberFact);
+						} else {
+							numberCustomerInv.setText(serieFact+"/"+nextNumberFact);
+						}
+						
+						
+						// Eliminando la parte grafica
+						selCustomerInv.setSelectedIndex(0);
+						nameCustomerInv.setText("");
+										
+						
+						numberOp=new JComboBox<String>();
+						numberOp.addItem("Entrada directa");
+						numberOp.setSelectedIndex(0);
+						textOp.setText("");
+						qttOp.setText("");
+						priceOp.setText("");
+						ivaOp.setSelectedIndex(0);
+						amountOp.setText("");
+						
+						
+						cod1.setText("");
+						tex1.setText("");
+						ud1.setText("");
+						price1.setText("");
+						iva1.setText("");
+						imp1.setText("");
+						cod2.setText("");
+						tex2.setText("");
+						ud2.setText("");
+						price2.setText("");
+						iva2.setText("");
+						imp2.setText("");
+						cod3.setText("");
+						tex3.setText("");
+						ud3.setText("");
+						price3.setText("");
+						iva3.setText("");
+						imp3.setText("");
+						cod4.setText("");
+						tex4.setText("");
+						ud4.setText("");
+						price4.setText("");
+						iva4.setText("");
+						imp4.setText("");
+						cod5.setText("");
+						tex5.setText("");
+						ud5.setText("");
+						price5.setText("");
+						iva5.setText("");
+						imp5.setText("");
+						
+						baseImp.setText("");
+						cuotaIva.setText("");
+						importeTotal.setText("");
+						
+						nameCustomerInv.setBackground(OKFORM);
+						dateCustomerInv.setBackground(OKFORM);
+						numberCustomerInv.setBackground(OKFORM);
+						textOp.setBackground(OKFORM);
+						qttOp.setBackground(OKFORM);
+						priceOp.setBackground(OKFORM);
+						amountOp.setBackground(OKFORM);
+				
+						if (JOptionPane.showConfirmDialog(mainFrame, "¿Desea generar un pdf de la factura?", "Impresión de la factura", JOptionPane.YES_NO_OPTION)==0) {
+							if (dataList.getInvoice("Factura"+datosF.getSerial()+datosF.getNumber(), datosF)) {
+								JOptionPane.showMessageDialog(mainFrame, "Generado el pdf de la factura","Impresión de la factura",JOptionPane.INFORMATION_MESSAGE);
+							} else {
+								JOptionPane.showMessageDialog(mainFrame, "Error: no ha sido posible generar el pdf","Impresión de la factura",JOptionPane.ERROR_MESSAGE);
 							}
 						}
-					}
-					
-					// cambiando el numero de factura			
-					
-					int numf=0;
-					try {
-						numf=(int)Integer.parseInt((numbIv));
-					} catch (NumberFormatException nf) {
-						// do nothing
-						System.err.println("ERROR: "+numbIv+" no es posible transformar en número");
-					}
-
-					if (numf==(SpringFacturacion.lastInvoiceNumber+1)) {
-						SpringFacturacion.lastInvoiceNumber=SpringFacturacion.lastInvoiceNumber+1;
-					} 
-					
-					nextNumberFact=formatoFactura.format(SpringFacturacion.lastInvoiceNumber+1);
-					if (serieFact.isEmpty()) {
-						numberCustomerInv.setText(nextNumberFact);
 					} else {
-						numberCustomerInv.setText(serieFact+"/"+nextNumberFact);
+						JOptionPane.showMessageDialog(mainFrame, "Error en grabación de factura","Grabación de facturas",JOptionPane.ERROR_MESSAGE);
 					}
 					
+					// eliminando la lista
+					datosFact.clear();
 					
-					// Eliminando la parte grafica
-					selCustomerInv.setSelectedIndex(0);
-					nameCustomerInv.setText("");
-									
-					
-					numberOp=new JComboBox<String>();
-					numberOp.addItem("Entrada directa");
-					numberOp.setSelectedIndex(0);
-					textOp.setText("");
-					qttOp.setText("");
-					priceOp.setText("");
-					ivaOp.setSelectedIndex(0);
-					amountOp.setText("");
-					
-					
-					cod1.setText("");
-					tex1.setText("");
-					ud1.setText("");
-					price1.setText("");
-					iva1.setText("");
-					imp1.setText("");
-					cod2.setText("");
-					tex2.setText("");
-					ud2.setText("");
-					price2.setText("");
-					iva2.setText("");
-					imp2.setText("");
-					cod3.setText("");
-					tex3.setText("");
-					ud3.setText("");
-					price3.setText("");
-					iva3.setText("");
-					imp3.setText("");
-					cod4.setText("");
-					tex4.setText("");
-					ud4.setText("");
-					price4.setText("");
-					iva4.setText("");
-					imp4.setText("");
-					cod5.setText("");
-					tex5.setText("");
-					ud5.setText("");
-					price5.setText("");
-					iva5.setText("");
-					imp5.setText("");
-					
-					baseImp.setText("");
-					cuotaIva.setText("");
-					importeTotal.setText("");
-					
-					nameCustomerInv.setBackground(OKFORM);
-					dateCustomerInv.setBackground(OKFORM);
-					numberCustomerInv.setBackground(OKFORM);
-					textOp.setBackground(OKFORM);
-					qttOp.setBackground(OKFORM);
-					priceOp.setBackground(OKFORM);
-					amountOp.setBackground(OKFORM);
-			
-					if (JOptionPane.showConfirmDialog(mainFrame, "¿Desea generar un pdf de la factura?", "Impresión de la factura", JOptionPane.YES_NO_OPTION)==0) {
-						if (dataList.getInvoice("Factura"+datosF.getSerial()+datosF.getNumber(), datosF)) {
-							JOptionPane.showMessageDialog(mainFrame, "Generado el pdf de la factura","Impresión de la factura",JOptionPane.INFORMATION_MESSAGE);
-						} else {
-							JOptionPane.showMessageDialog(mainFrame, "Error: no ha sido posible generar el pdf","Impresión de la factura",JOptionPane.ERROR_MESSAGE);
-						}
-					}
-				} else {
-					JOptionPane.showMessageDialog(mainFrame, "Error en grabación de factura","Grabación de facturas",JOptionPane.ERROR_MESSAGE);
-				}
-				
-				// eliminando la lista
-				datosFact.clear();
-				
-				// eliminando variables
-				base0=0;
-				base1=0;
-				base2=0;
-				base3=0;
-				cuota1=0;
-				cuota2=0;
-				cuota3=0;		
-				baseI=0;
-				cuotaI=0;
-				retencI=0;
+					// eliminando variables
+					base0=0;
+					base1=0;
+					base2=0;
+					base3=0;
+					cuota1=0;
+					cuota2=0;
+					cuota3=0;		
+					baseI=0;
+					cuotaI=0;
+					retencI=0;
 
-				tipoIva1=0;
-				tipoIva2=0;
-				tipoIva3=0;
+					tipoIva1=0;
+					tipoIva2=0;
+					tipoIva3=0;
+				}
+			} else {
+				JOptionPane.showMessageDialog(mainFrame, "No es posible grabar la factura:\n" +
+						"Datos incorrectos o formulario incompleto.","Grabación de facturas",JOptionPane.ERROR_MESSAGE);
 			}
+			
 
 		}	 //END OF GRABAR FACTURA
 
@@ -1511,8 +1574,6 @@ public class PanelInvoicesCreating extends UtilsFacturacion implements ActionLis
 		}
 		
 		
-
-			
 	} // end of itemStateChanged
 	
 

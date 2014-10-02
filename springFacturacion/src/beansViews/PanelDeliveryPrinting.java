@@ -149,7 +149,15 @@ public class PanelDeliveryPrinting implements ActionListener {
 		
 		// creamos los combobox
 		listCustomers=clienteFac.getListCustomers();
+		if (listCustomers==null) {
+			listCustomers=new ArrayList<String[]>();
+		}
+		
 		listSelectedCustomers=clienteFac.getListCustomers();
+		if (listSelectedCustomers==null) {
+			listSelectedCustomers=new ArrayList<String[]>();
+		}
+		
 		firstCustomer=new JComboBox<String>();
 		lastCustomer=new JComboBox<String>();
 
@@ -169,7 +177,9 @@ public class PanelDeliveryPrinting implements ActionListener {
 		firstDelivery.addItem("Albarán inicial... ");
 		
 		listDeliveries=albaranes.searchAllDeliveries();
-		
+		if (listDeliveries==null) {
+			listDeliveries=new ArrayList<String[]>();
+		}
 		for (String[] list:listDeliveries) {
 			firstDelivery.addItem(list[3]);
 		}
@@ -188,8 +198,7 @@ public class PanelDeliveryPrinting implements ActionListener {
 		deliveryState.addItem("Todos");
 		deliveryState.addItem("Pendientes");
 		deliveryState.addItem("Facturados");
-		
-		
+				
 		// titulo
 		JLabel title=new JLabel("LISTADO DE ALBARANES");
 		title.setFont(font1);

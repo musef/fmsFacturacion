@@ -320,15 +320,17 @@ public class ListadosCsv {
 	 * @param cust2 - int, indice del list de clientes hasta el cual se seleccionan las facturas
 	 * @param inv1 - long, número de factura desde la cual listar.
 	 * @param inv2 - long, número de factura hasta la cual listar.
+	 * @param date1 - String, fecha desde la cual listar.
+	 * @param date2 - String, fecha hasta la cual listar
 	 * @param today - String, con el día de fecha de listado.
 	 * @return TRUE o FALSE con el resultado de la operación.
 	 */
 	
-	public boolean generatesCsvListInvoices(List<String[]>listSelectedCustomers, List<String[]>listSelectedInvoices, int cust1, int cust2, long inv1, long inv2, String today) {
+	public boolean generatesCsvListInvoices(List<String[]>listSelectedCustomers, List<String[]>listSelectedInvoices, int cust1, int cust2, long inv1, long inv2, String date1, String date2, String today) {
 		
 		// CABECERA
-		String title="LISTADO DE FACTURAS del "+inv1+" al "+inv2+" SELECCIONADO POR CLIENTES;\n\n";
-		
+		String title="LISTADO DE FACTURAS SELECCIONADO POR CLIENTES;\n";
+		String title2="desde "+inv1+" al "+inv2+" y del "+date1+" al "+date2+";\n\n";
 		// CUERPO
 		
 		String cabeceras="CLIENTE;"+"SERIE;"+"NÚMERO;"+"FECHA;"+"BASE IMPONIBLE;"+"CUOTA IVA;"+"TOTAL FACTURA;\n";
@@ -348,7 +350,9 @@ public class ListadosCsv {
 				} catch (NumberFormatException nf) {
 					numF=0;
 				}
-				if (a[10].equals(listSelectedCustomers.get(j)[1]) && numF>=inv1 && numF<=inv2) {
+				// seleccion por clientes, numeros de factura y fechas
+				if (a[10].equals(listSelectedCustomers.get(j)[1]) && numF>=inv1 && numF<=inv2 && 
+						a[3].compareTo(date1)>=0 && a[3].compareTo(date2)<=0) {
 					double bas=(double)Double.parseDouble(a[16])+(double)Double.parseDouble(a[17])+(double)Double.parseDouble(a[20])+(double)Double.parseDouble(a[23]);
 					double tot=(double)Double.parseDouble(a[28]);
 					double iva=tot-bas;
@@ -377,7 +381,7 @@ public class ListadosCsv {
 		//ClockAndDate today=new ClockAndDate();
 		String pie="Listado generado por "+SpringFacturacion.nameUsuario+" el "+today;			
 		
-		String dataToRecording=title+cabeceras+cuerpo+resumen+pie;
+		String dataToRecording=title+title2+cabeceras+cuerpo+resumen+pie;
 		
 		//FileRecorder fr=new FileRecorder();
 		boolean result=recording.CreateListInvoices("listadoFacturas",dataToRecording);

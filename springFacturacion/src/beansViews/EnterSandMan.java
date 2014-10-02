@@ -185,7 +185,8 @@ public class EnterSandMan extends JFrame implements ActionListener {
 		panelTitle.setAlignmentY(JPanel.LEFT_ALIGNMENT);
 		
 		JLabel title=new JLabel("");
-		icon = new ImageIcon("src/images/fmsSoft_sub.png");
+		java.net.URL imgURL=getClass().getResource("/images/fmsSoft_sub.png");
+		icon=new ImageIcon(imgURL);
 		title.setIcon(icon);
 
 		panelTitle.setLayout(new FlowLayout());
@@ -341,11 +342,12 @@ public class EnterSandMan extends JFrame implements ActionListener {
 		marcoAux1.setPreferredSize(new Dimension(600,600));
 		marcoAux1.setLayout(new GridLayout(2,2));
 			
-		ImageIcon ic1 = new ImageIcon("src/images/admin.png");
-		ImageIcon ic2 = new ImageIcon("src/images/clientes.png");		
-		ImageIcon ic3 = new ImageIcon("src/images/albaranes.png");
-		ImageIcon ic4 = new ImageIcon("src/images/facturacion.png");
-		
+		java.net.URL imgURL=getClass().getResource("/images/fmsSoft_sub.png");
+		icon=new ImageIcon(imgURL);
+		ImageIcon ic1 = new ImageIcon(getClass().getResource("/images/admin.png"));
+		ImageIcon ic2 = new ImageIcon(getClass().getResource("/images/clientes.png"));
+		ImageIcon ic3 = new ImageIcon(getClass().getResource("/images/albaranes.png"));
+		ImageIcon ic4 = new ImageIcon(getClass().getResource("/images/facturacion.png"));
 
 		b1=new JButton(ic1);
 		b1.setActionCommand("admin");
@@ -383,9 +385,7 @@ public class EnterSandMan extends JFrame implements ActionListener {
 		nameTitle.setFont(font0);
 		titulo.add(nameTitle);
 
-			// elemento de separacion
-		//titulo.add(new JLabel("**"));
-		
+	
 			// creamos el elemento fecha y hora de conexión 
 		timeAndDate=new JLabel("conexion: "+time.showMeTheDate());
 		timeAndDate.setFont(font1);
@@ -442,7 +442,6 @@ public class EnterSandMan extends JFrame implements ActionListener {
 		b4.addActionListener(this);
 		desconectar.addActionListener(this);
 		
-		//okey.addActionListener(this);
 		
 	}	// fin del metodo iniciate
 	
@@ -529,8 +528,7 @@ public class EnterSandMan extends JFrame implements ActionListener {
 		panelTabuladoPrincipal.addTab("Clientes", panel2);		
 		panelTabuladoPrincipal.addTab("Albaranes", panel3);
 		panelTabuladoPrincipal.addTab("Facturas", panel4);
-				
-		
+						
 		return panelTabuladoPrincipal;
 		
 	}	// fin del metodo panelTabulado	

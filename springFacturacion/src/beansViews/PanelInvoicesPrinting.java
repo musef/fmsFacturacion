@@ -9,8 +9,6 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent; 
-import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
@@ -45,7 +44,7 @@ import main.SpringFacturacion;
  * @version 1.1.0_Spring 2014-08-31
  */
 
-public class PanelInvoicesPrinting implements ActionListener, ItemListener {
+public class PanelInvoicesPrinting implements ActionListener {
 	
 	private JFrame mainFrame;
 	private JPanel marcoAux1;
@@ -62,6 +61,8 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 	private List<String[]> listSelectedInvoices;
 	private JComboBox<String> firstInvoice;
 	private JComboBox<String> lastInvoice;
+	private JTextField firstDate;
+	private JTextField lastDate;
 	private List<String[]> listCustomers;
 	private List<String[]> listSelectedCustomers;
 	private JComboBox<String> firstCustomer;
@@ -144,7 +145,15 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 		
 		// creamos los combobox
 		listCustomers=clienteFac.getListCustomers();
+		if (listCustomers==null) {
+			listCustomers=new ArrayList<String[]>();
+		}
+		
 		listSelectedCustomers=clienteFac.getListCustomers();
+		if (listSelectedCustomers==null) {
+			listSelectedCustomers=new ArrayList<String[]>();
+		}
+		
 		firstCustomer=new JComboBox<String>();
 		lastCustomer=new JComboBox<String>();
 
@@ -163,9 +172,14 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 		firstInvoice=new JComboBox<String>();
 		firstInvoice.addItem("Factura inicial... ");
 		listInvoices=facturador.searchExtractInvoicesByCustomers(listSelectedCustomers);
+		if (listInvoices==null) {
+			listInvoices=new ArrayList<String[]>();
+		}
+		
 		if ((listSelectedInvoices=facturador.searchExtractInvoices())==null) {
 			listSelectedInvoices=new ArrayList<String[]>();
 		}
+		
 		for (String[] list:listInvoices) {
 			firstInvoice.addItem(list[1]);
 		}
@@ -178,6 +192,7 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 		}
 		lastInvoice.setSelectedIndex(lInv);
 	
+
 		
 		// titulo
 		JLabel title=new JLabel("LISTADO DE FACTURAS");
@@ -195,6 +210,14 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 
 		JLabel inv2=new JLabel("Hasta factura... ");
 		inv2.setFont(font2);
+		
+		JLabel date1=new JLabel("Desde fecha... ");
+		date1.setFont(font2);
+		firstDate=new JTextField("01-01-"+dateEsp.getDate().substring(6));
+
+		JLabel date2=new JLabel("Hasta fecha... ");
+		date2.setFont(font2);
+		lastDate=new JTextField("31-12-"+dateEsp.getDate().substring(6));
 		
 	
 		// preparamos los botones
@@ -270,18 +293,13 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 		marcoAux1.add(new JLabel(" "));
 		
 		marcoAux1.add(new JLabel(" "));
-		marcoAux1.add(buttonPane);
-		marcoAux1.add(new JLabel(""));
+		marcoAux1.add(date1);
+		marcoAux1.add(firstDate);
 		marcoAux1.add(new JLabel(" "));
 		
 		marcoAux1.add(new JLabel(" "));
-		marcoAux1.add(new JLabel(" "));
-		marcoAux1.add(new JLabel(" "));
-		marcoAux1.add(new JLabel(" "));
-		
-		marcoAux1.add(new JLabel(" "));
-		marcoAux1.add(new JLabel(" "));
-		marcoAux1.add(new JLabel(" "));
+		marcoAux1.add(date2);
+		marcoAux1.add(lastDate);
 		marcoAux1.add(new JLabel(" "));
 		
 		marcoAux1.add(new JLabel(" "));
@@ -290,8 +308,8 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 		marcoAux1.add(new JLabel(" "));
 
 		marcoAux1.add(new JLabel(" "));
-		marcoAux1.add(new JLabel(" "));
-		marcoAux1.add(new JLabel(" "));
+		marcoAux1.add(buttonPane);
+		marcoAux1.add(new JLabel(""));
 		marcoAux1.add(new JLabel(" "));
 		
 		marcoAux1.add(new JLabel(" "));
@@ -313,11 +331,12 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 		// habilitamos los listener de los eventos
 		listar.addActionListener(this);
 		info.addActionListener(this);
+		/*
 		firstCustomer.addItemListener(this);
 		lastCustomer.addItemListener(this);
 		firstInvoice.addItemListener(this);
 		lastInvoice.addItemListener(this);
-		
+		*/
 		return marco2;	
 	
 		
@@ -333,7 +352,7 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 	 * @return JFrame, conteniendo la pantalla emergente con el listado de facturas solicitado.
 	 */
 	
-	private JFrame showListInvoices(List<String[]>listInvoicesToPrinting) {
+	private JFrame showListInvoices(List<String[]>listInvoicesToPrinting, long num1, long num2, String date1, String date2) {
 		
 		JFrame frameList=new JFrame("Listado de facturas");
 		frameList.setBounds(25, 25, 1000, 700);
@@ -348,8 +367,10 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 		// CABECERA
 		JPanel marcoTit=new JPanel();
 		JLabel title=new JLabel("LISTADO DE FACTURAS");
+		JLabel title2=new JLabel("Desde "+num1+" hasta "+num2+ " y del "+date1+" al "+date2);
 		title.setFont(font1);
 		marcoTit.add(title);
+		marcoTit.add(title2);
 		
 		// CUERPO
 		
@@ -531,10 +552,10 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 	 * @return
 	 */
 	
-	private boolean generatesPdfFile(List<String[]>listSelectedCustomers, List<String[]>listSelectedInvoices, int cust1, int cust2, long inv1, long inv2) {
+	private boolean generatesPdfFile(List<String[]>listSelectedCustomers, List<String[]>listSelectedInvoices, int cust1, int cust2, long inv1, long inv2, String date1, String date2) {
 		
 		// CABECERA
-		String titulo="LISTADO DE FACTURAS\n\n";
+		String titulo="LISTADO DE FACTURAS desde "+inv1+" hasta "+inv2+ " y del "+date1+" al "+date2+"\n\n";
 		
 		// CUERPO
 		List<String[]> cuerpo=new ArrayList<String[]>();
@@ -548,7 +569,9 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 				} catch (NumberFormatException nf) {
 					numF=0;
 				}
-				if (a[10].equals(listSelectedCustomers.get(j)[1]) && numF>=inv1 && numF<=inv2) {
+				// seleccion por los filtros de clientes, numeros y fechas elegidos
+				if (a[10].equals(listSelectedCustomers.get(j)[1]) && numF>=inv1 && numF<=inv2 &&
+						a[3].compareTo(date1)>=0 && a[3].compareTo(date2)<=0) {
 					double bas=(double)Double.parseDouble(a[16])+(double)Double.parseDouble(a[17])+(double)Double.parseDouble(a[20])+(double)Double.parseDouble(a[23]);
 					double tot=(double)Double.parseDouble(a[28]);
 					double iva=tot-bas;
@@ -656,14 +679,7 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 		return aLabel;
 	} // end of labelFont
 	
-	
-	
 
-	@Override
-	public void itemStateChanged(ItemEvent e) {
-		
-		
-	}
 
 	
 	@Override
@@ -673,6 +689,7 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 		
 		if (source.equals("Listar")) {
 			
+			// Seleccion de los clientes
 			int indCustomer1=0;
 			if (firstCustomer.getSelectedIndex()==0) {
 				indCustomer1=0;
@@ -687,6 +704,7 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 				indCustomer2=lastCustomer.getSelectedIndex()-1;
 			}
 			
+			// seleccion por facturas
 			long invoice1=0;
 			if (firstInvoice.getSelectedIndex()!=0) {
 				try {
@@ -709,8 +727,27 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 				invoice2=999999999;
 			}
 		
+			// seleccion por fechas
+			String fecha1=firstDate.getText().trim();
+			String fecha2=lastDate.getText().trim();
+			
+			if (!dateEsp.checkDate(fecha1)) {
+				fecha1=dateEsp.getDate().substring(6)+"-01-01";
+			} else {
+				fecha1=fecha1.substring(6)+fecha1.substring(2,6)+fecha1.substring(0,2);
+			}
+			
+			if (!dateEsp.checkDate(fecha2)) {
+				fecha2=dateEsp.getDate().substring(6)+"-12-31";
+			} else {
+				fecha2=fecha2.substring(6)+fecha2.substring(2,6)+fecha2.substring(0,2);
+			}
+			
+			// comienza la creacion de las listas
 			List<String[]> listInvoicesToPrinting=new ArrayList<String[]>();
-			for (String a[]:listSelectedInvoices) {		
+			
+			for (String a[]:listSelectedInvoices) {
+				// primero se selecciona por clientes
 				for (int j=indCustomer1;j<=indCustomer2;j++) {
 					// dentro de los limites de cliente seleccionado
 					long numF=0;
@@ -719,19 +756,24 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 					} catch (NumberFormatException nf) {
 						numF=0;
 					}
-					if (a[10].equals(listSelectedCustomers.get(j)[1]) && numF>=invoice1 && numF<=invoice2) {
+					// dentro del cliente, se selecciona por numeros y fechas
+					if (a[10].equals(listSelectedCustomers.get(j)[1]) && numF>=invoice1 && numF<=invoice2 &&
+							a[3].compareTo(fecha1)>=0 && a[3].compareTo(fecha2)<=0) {
 						// dentro de los limites de facturas seleccionadas
 						listInvoicesToPrinting.add(a);
 					}
 				}	
 			}
-			showListInvoices(listInvoicesToPrinting);
+			
+			// muestra por pantalla
+			showListInvoices(listInvoicesToPrinting, invoice1, invoice2, fecha1, fecha2);
 
 		} // fin de lista
 		
 		
 		if (source.equals("Generar .CSV")) {
 			
+			// seleccion por clientes
 			int indCustomer1=0;
 			if (firstCustomer.getSelectedIndex()==0) {
 				indCustomer1=0;
@@ -746,6 +788,7 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 				indCustomer2=lastCustomer.getSelectedIndex()-1;
 			}
 			
+			// seleccion por numero
 			long invoice1=0;
 			if (firstInvoice.getSelectedIndex()!=0) {
 				try {
@@ -768,7 +811,24 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 				invoice2=999999999;
 			}
 			
-			if (dataListCsv.generatesCsvListInvoices(listSelectedCustomers, listSelectedInvoices, indCustomer1, indCustomer2, invoice1, invoice2, dateEsp.showMeTheDate())) {
+			// seleccion por fechas
+			String fecha1=firstDate.getText().trim();
+			String fecha2=lastDate.getText().trim();
+			
+			if (!dateEsp.checkDate(fecha1)) {
+				fecha1=dateEsp.getDate().substring(6)+"-01-01";
+			} else {
+				fecha1=fecha1.substring(6)+fecha1.substring(2,6)+fecha1.substring(0,2);
+			}
+			
+			if (!dateEsp.checkDate(fecha2)) {
+				fecha2=dateEsp.getDate().substring(6)+"-12-31";
+			} else {
+				fecha2=fecha2.substring(6)+fecha2.substring(2,6)+fecha2.substring(0,2);
+			}
+			
+			if (dataListCsv.generatesCsvListInvoices(listSelectedCustomers, listSelectedInvoices, indCustomer1, indCustomer2, 
+					invoice1, invoice2, fecha1, fecha2, dateEsp.showMeTheDate())) {
 				JOptionPane.showMessageDialog(mainFrame, "El fichero csv ha sido generado correctamente", "Generación de ficheros", JOptionPane.INFORMATION_MESSAGE);
 			} else {
 				JOptionPane.showMessageDialog(mainFrame, "ERROR\n\nNo ha sido posible generar el fichero csv", "Generación de ficheros", JOptionPane.ERROR_MESSAGE);
@@ -778,6 +838,7 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 		
 		if (source.equals("Generar .PDF")) {
 			
+			// seleccion por clientes
 			int indCustomer1=0;
 			if (firstCustomer.getSelectedIndex()==0) {
 				indCustomer1=0;
@@ -792,6 +853,7 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 				indCustomer2=lastCustomer.getSelectedIndex()-1;
 			}
 			
+			// seleccion por numeros
 			long invoice1=0;
 			if (firstInvoice.getSelectedIndex()!=0) {
 				try {
@@ -814,7 +876,24 @@ public class PanelInvoicesPrinting implements ActionListener, ItemListener {
 				invoice2=999999999;
 			}
 			
-			if (generatesPdfFile(listSelectedCustomers, listSelectedInvoices, indCustomer1, indCustomer2, invoice1, invoice2)) {
+			// seleccion por fechas
+			String fecha1=firstDate.getText().trim();
+			String fecha2=lastDate.getText().trim();
+			
+			if (!dateEsp.checkDate(fecha1)) {
+				fecha1=dateEsp.getDate().substring(6)+"-01-01";
+			} else {
+				fecha1=fecha1.substring(6)+fecha1.substring(2,6)+fecha1.substring(0,2);
+			}
+			
+			if (!dateEsp.checkDate(fecha2)) {
+				fecha2=dateEsp.getDate().substring(6)+"-12-31";
+			} else {
+				fecha2=fecha2.substring(6)+fecha2.substring(2,6)+fecha2.substring(0,2);
+			}
+			
+			if (generatesPdfFile(listSelectedCustomers, listSelectedInvoices, indCustomer1, indCustomer2, 
+					invoice1, invoice2, fecha1, fecha2)) {
 				JOptionPane.showMessageDialog(mainFrame, "El fichero pdf ha sido generado correctamente", "Generación de ficheros", JOptionPane.INFORMATION_MESSAGE);
 			} else {
 				JOptionPane.showMessageDialog(mainFrame, "ERROR\n\nNo ha sido posible generar el fichero pdf", "Generación de ficheros", JOptionPane.ERROR_MESSAGE);

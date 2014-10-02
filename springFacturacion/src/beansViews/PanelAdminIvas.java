@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -68,6 +69,8 @@ public class PanelAdminIvas implements ActionListener, ItemListener {
 	private Font font1=new Font("SansSerif", Font.BOLD, 20);
 	private Font font2=new Font("SansSerif", Font.BOLD, 16);
 	private Color colorL=Color.BLACK;
+	private final Color ERRORFORM=Color.RED;
+	private final Color OKFORM=Color.WHITE;
 
 	
 
@@ -123,7 +126,8 @@ public class PanelAdminIvas implements ActionListener, ItemListener {
 		selIva.addItem("Seleccione...");
 		//ivas=new TiposIvaBean();
 		if ((allIva=ivas.getListIva())==null) {
-			allIva.add(new String[7]);
+			allIva=new ArrayList<String[]>();
+			//allIva.add(new String[7]);
 		}
 		for (String[] data: allIva) {
 			selIva.addItem(data[2]);
@@ -275,6 +279,49 @@ public class PanelAdminIvas implements ActionListener, ItemListener {
 	
 	
 	/**
+	 * Este metodo chequea el formulario y devuelve un false algun campo esta erroneo y faltan datos
+	 * para rellenar. A su vez, resalta en rojo el campo erroneo.
+	 * @return Boolean, TRUE o FALSE según el formulario esté correcto o contenga errores.
+	 */
+	
+	private boolean checkForm() {
+	
+		boolean result=true;
+		
+		nameIva.setBackground(OKFORM);
+		tipoIva.setBackground(OKFORM);
+		
+		if (nameIva.getText().trim().length()<3 || nameIva.getText().trim().length()>50) {
+			nameIva.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		if (tipoIva.getText().trim().length()>6) {
+			tipoIva.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		if (tipoIva.getText().trim().isEmpty()) {
+			tipoIva.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		@SuppressWarnings("unused")
+		double numberF=0;
+		try {
+			String tip=tipoIva.getText().trim();
+			numberF=(double)Double.parseDouble(tip);
+		} catch (NumberFormatException nf) {
+			tipoIva.setBackground(ERRORFORM);
+			result=false;
+		}
+	
+		return result;
+	}  // end of checkForm
+	
+	
+	
+	/**
 	 * Crea la ayuda en pantalla
 	 */
 	
@@ -370,68 +417,84 @@ public class PanelAdminIvas implements ActionListener, ItemListener {
 		
 		if (source.equals("Grabar") && selIva.getSelectedIndex()==0 ) {
 			// GRABAR UN NUEVO IVA
-			
-			//TiposIva newIva=new TiposIva();
-			newIva.setActiveIva(1);
-			newIva.setNameIva(nameIva.getText().trim());
-			newIva.setRateIva((double)Double.parseDouble(tipoIva.getText().trim()));
-			
-			if (destIva.getSelectedIndex()==0) {
-				newIva.setTypeIva(1);
-			} else {
-				newIva.setTypeIva(2);
-			}
-			
-			newIva.setActiveIva(0);
-			if (activoIva.isSelected()) {
+			if (checkForm()) {
+				//TiposIva newIva=new TiposIva();
 				newIva.setActiveIva(1);
-			}
-			
-			newIva.setClassIva(claseIva.getSelectedIndex());
-			newIva.setAccIva("");
-			if (ivas.createIva(newIva)) {
-				// muestra mensaje y actualiza las pestañas
-				JOptionPane.showMessageDialog(mainFrame, "El iva ha sido grabado correctamente", "Grabación de IVA", JOptionPane.INFORMATION_MESSAGE);
-				reinicia.reinicia(1,2);
+				newIva.setNameIva(nameIva.getText().trim());
+				double iv1=0;
+				try {
+					iv1=(double)Double.parseDouble(tipoIva.getText().trim());
+				} catch (NumberFormatException nf) {
+					iv1=0;
+				}
+				newIva.setRateIva(iv1);
+				
+				if (destIva.getSelectedIndex()==0) {
+					newIva.setTypeIva(1);
+				} else {
+					newIva.setTypeIva(2);
+				}
+				
+				newIva.setActiveIva(0);
+				if (activoIva.isSelected()) {
+					newIva.setActiveIva(1);
+				}
+				
+				newIva.setClassIva(claseIva.getSelectedIndex());
+				newIva.setAccIva("");
+				if (ivas.createIva(newIva)) {
+					// muestra mensaje y actualiza las pestañas
+					JOptionPane.showMessageDialog(mainFrame, "El iva ha sido grabado correctamente", "Grabación de IVA", JOptionPane.INFORMATION_MESSAGE);
+					reinicia.reinicia(1,2);
+				} else {
+					JOptionPane.showMessageDialog(mainFrame, "Error en la grabación del iva", "Grabación de IVA", JOptionPane.ERROR_MESSAGE);
+				}
 			} else {
-				JOptionPane.showMessageDialog(mainFrame, "Error en la grabación del iva", "Grabación de IVA", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(mainFrame, "Faltan datos necesarios para crear el IVA\n" +
+						"o hay datos incorrectos en el formulario.", "Grabación de IVA", JOptionPane.ERROR_MESSAGE);
 			}
+
 		}
 
 		if (source.equals("Grabar") && selIva.getSelectedIndex()>0 ) {
 			// MODIFICAR UN IVA
-			
-			//TiposIva newIva=new TiposIva();
-			idIva=allIva.get(selIva.getSelectedIndex()-1)[0];
-			try {
-				newIva.setIdIva((long)Long.parseLong(idIva));
-			} catch (NumberFormatException nf) {
-				newIva.setIdIva(0);
-			}			
-			
-			newIva.setActiveIva(0);
-			if (activoIva.isSelected()) {
-				newIva.setActiveIva(1);
-			}
-			
-			newIva.setNameIva(nameIva.getText().trim());
-			newIva.setRateIva((double)Double.parseDouble(tipoIva.getText().trim()));
-			
-			if (destIva.getSelectedIndex()==0) {
-				newIva.setTypeIva(1);
+			if (checkForm()) {
+				//TiposIva newIva=new TiposIva();
+				idIva=allIva.get(selIva.getSelectedIndex()-1)[0];
+				try {
+					newIva.setIdIva((long)Long.parseLong(idIva));
+				} catch (NumberFormatException nf) {
+					newIva.setIdIva(0);
+				}			
+				
+				newIva.setActiveIva(0);
+				if (activoIva.isSelected()) {
+					newIva.setActiveIva(1);
+				}
+				
+				newIva.setNameIva(nameIva.getText().trim());
+				newIva.setRateIva((double)Double.parseDouble(tipoIva.getText().trim()));
+				
+				if (destIva.getSelectedIndex()==0) {
+					newIva.setTypeIva(1);
+				} else {
+					newIva.setTypeIva(2);
+				}
+				
+				newIva.setClassIva(claseIva.getSelectedIndex());
+				newIva.setAccIva("");
+				if (ivas.modifyIva(idIva, newIva)) {
+					// muestra mensaje y actualiza las pestañas
+					JOptionPane.showMessageDialog(mainFrame, "El iva ha sido modificado correctamente", "Modificación de IVA", JOptionPane.INFORMATION_MESSAGE);
+					reinicia.reinicia(1,2);
+				} else {
+					JOptionPane.showMessageDialog(mainFrame, "Error en la modificación del iva", "Modificación de IVA", JOptionPane.ERROR_MESSAGE);
+				}
 			} else {
-				newIva.setTypeIva(2);
+				JOptionPane.showMessageDialog(mainFrame, "Faltan datos necesarios para modificar el IVA\n" +
+						"o hay datos incorrectos en el formulario.", "Modificación de IVA", JOptionPane.ERROR_MESSAGE);
 			}
-			
-			newIva.setClassIva(claseIva.getSelectedIndex());
-			newIva.setAccIva("");
-			if (ivas.modifyIva(idIva, newIva)) {
-				// muestra mensaje y actualiza las pestañas
-				JOptionPane.showMessageDialog(mainFrame, "El iva ha sido modificado correctamente", "Modificación de IVA", JOptionPane.INFORMATION_MESSAGE);
-				reinicia.reinicia(1,2);
-			} else {
-				JOptionPane.showMessageDialog(mainFrame, "Error en la modificación del iva", "Modificación de IVA", JOptionPane.ERROR_MESSAGE);
-			}
+
 		}
 		
 		

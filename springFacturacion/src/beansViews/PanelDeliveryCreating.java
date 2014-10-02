@@ -251,6 +251,9 @@ public class PanelDeliveryCreating extends UtilsFacturacion implements ActionLis
 		selCustomerInv.addItem("Seleccione cliente...");
 		//clienteFac=new ClientesBean();
 		listClientesFac=clienteFac.getListCustomers();
+		if (listClientesFac==null) {
+			listClientesFac=new ArrayList<String[]>();
+		}
 		for (String[] data: listClientesFac) {
 			selCustomerInv.addItem(data[2]);
 		}
@@ -285,7 +288,7 @@ public class PanelDeliveryCreating extends UtilsFacturacion implements ActionLis
 		listIv=ivas.getListIva();
 		if (listIv==null) {
 			listIv=new ArrayList<String[]>();
-		}
+		} 
 		for (String[] a:listIv) {
 			if (!(a[1].equals("0") || a[4].equals("2"))) {
 				// si el iva no esta inactivo ni es de compras lo añade
@@ -568,6 +571,50 @@ public class PanelDeliveryCreating extends UtilsFacturacion implements ActionLis
 		return marco2;
 				
 	} // end of method makeDelivery
+	
+	
+	
+	/**
+	 * Este método realiza un chequeo de los datos del albaran. Si detecta un
+	 * error, devuelve un false, e ilumina la casilla del formulario de creación albaranes.
+	 * 
+	 * @return boolean TRUE or FALSE según el formulario esté correcto o haya errores.
+	 */
+	
+	private boolean checkFinalForm () {
+		
+		boolean result=true;
+		
+		nameCustomerInv.setBackground(OKFORM);
+		dateCustomerInv.setBackground(OKFORM);
+		numberCustomerInv.setBackground(OKFORM);
+		
+		if (nameCustomerInv.getText().trim().isEmpty()) {
+			nameCustomerInv.setBackground(ERRORFORM);
+			result=false;
+		}
+				
+		if (!dateEsp.checkDate(dateCustomerInv.getText().trim())) {
+			dateCustomerInv.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		if (numberCustomerInv.getText().trim().isEmpty()) {
+			numberCustomerInv.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		// Si no hay texto en tex1 es que el albaran está en blanco. No se admite un albaran sin texto
+		// se admite un albaran sin importes, solo texto (por ejemplo para entrega sin cargo
+		// de un material de reposición o muestra)
+		if (tex1.getText().trim().isEmpty()) {
+			result=false;
+		}
+		
+		
+		return result;
+		
+	} // end of method checkFinalForm
 	
 	
 	
@@ -1016,130 +1063,138 @@ public class PanelDeliveryCreating extends UtilsFacturacion implements ActionLis
 		
 		if (source.equals("Grabar albarán")) {	
 			
-			if (JOptionPane.showConfirmDialog(mainFrame, "¿Desea grabar el albarán que ha introducido en el formulario?", "Grabación de albaranes", JOptionPane.YES_NO_OPTION)==0) {
+			if (checkFinalForm()) {
 				
-				// vuelve a calcular las bases
-				calculBases();
-				
-				// creacion del objeto albaran
-		
-				datosF.setInvoice("");
-				datosF.setCodeCustomer(selectedCustomer);
-				String numbIv=numberCustomerInv.getText().trim();
-				datosF.setNumber(numbIv);
-				String dateToRecord=dateCustomerInv.getText().trim().substring(6)+dateCustomerInv.getText().trim().substring(2,6)+dateCustomerInv.getText().trim().substring(0,2);
-				datosF.setDateOper(Date.valueOf(dateToRecord));
-				datosF.setCodeCompany(SpringFacturacion.idCompany);
-				
-				datosF.setCodeOper1("");
-				datosF.setCodeOper2("");
-				datosF.setCodeOper3("");
-				datosF.setTextOper1("");
-				datosF.setTextOper2("");
-				datosF.setTextOper3("");
-				
-				switch (datosAlb.size()) {
-				case 3:
-					datosF.setCodeOper3(datosAlb.get(2)[0]);
-					datosF.setTextOper3(datosAlb.get(2)[1]);
-					datosF.setQttOper3(convertToNumber(datosAlb.get(2)[2]));
-					datosF.setPriceOper3(convertToNumber(datosAlb.get(2)[3]));
-					datosF.setIvaOper3(convertToNumber(datosAlb.get(2)[4]));
-				case 2:
-					datosF.setCodeOper2(datosAlb.get(1)[0]);
-					datosF.setTextOper2(datosAlb.get(1)[1]);
-					datosF.setQttOper2(convertToNumber(datosAlb.get(1)[2]));
-					datosF.setPriceOper2(convertToNumber(datosAlb.get(1)[3]));
-					datosF.setIvaOper2(convertToNumber(datosAlb.get(1)[4]));
-				case 1:
-					datosF.setCodeOper1(datosAlb.get(0)[0]);
-					datosF.setTextOper1(datosAlb.get(0)[1]);
-					datosF.setQttOper1(convertToNumber(datosAlb.get(0)[2]));
-					datosF.setPriceOper1(convertToNumber(datosAlb.get(0)[3]));
-					datosF.setIvaOper1(convertToNumber(datosAlb.get(0)[4]));
-					break;
-					default:
-						break;		
-				}
-				
-				// los valores han sido calculados en calculaBase
-				datosF.setBaseImponible0(base0);
-				datosF.setBaseImponible1(base1);
-				datosF.setIva1(cuota1);
-				datosF.setTipoIva1(tipoIva1);
-				datosF.setBaseImponible2(base2);
-				datosF.setIva2(cuota2);
-				datosF.setTipoIva2(tipoIva2);
-				datosF.setBaseImponible3(base3);
-				datosF.setIva3(cuota3);
-				datosF.setTipoIva3(tipoIva3);
-				datosF.setRetencion(retencI);
-				datosF.setTipoRet(SpringFacturacion.retInvoices);
-				datosF.setTotalAlbaran(baseI+cuotaI-retencI);
-				
-				
-				// grabando el albaran
-				
-				if (albaranes.createDelivery(datosF)) {
-					JOptionPane.showMessageDialog(mainFrame, "Albarán grabado correctamente","Grabación de albaranes",JOptionPane.INFORMATION_MESSAGE);
-				
-					nextNumber=formatoFactura.format(albaranes.getNextNumber());
-					numberCustomerInv.setText(nextNumber);
+				if (JOptionPane.showConfirmDialog(mainFrame, "¿Desea grabar el albarán que ha introducido en el formulario?", "Grabación de albaranes", JOptionPane.YES_NO_OPTION)==0) {
 					
-					// eliminando la lista
-					datosAlb=new ArrayList<String[]>();
+					// vuelve a calcular las bases
+					calculBases();
 					
-					// Eliminando la parte grafica
-					selCustomerInv.setSelectedIndex(0);
-					nameCustomerInv.setText("");
-					
-					numberOp.setSelectedIndex(0);
-					textOp.setText("");
-					qttOp.setText("");
-					priceOp.setText("");
-					ivaOp.setSelectedIndex(0);
-					amountOp.setText("");
-					
-					cod1.setText("");
-					tex1.setText("");
-					ud1.setText("");
-					price1.setText("");
-					iva1.setText("");
-					imp1.setText("");
-					cod2.setText("");
-					tex2.setText("");
-					ud2.setText("");
-					price2.setText("");
-					iva2.setText("");
-					imp2.setText("");
-					cod3.setText("");
-					tex3.setText("");
-					ud3.setText("");
-					price3.setText("");
-					iva3.setText("");
-					imp3.setText("");
-					
-					baseImp.setText("");
-					cuotaIva.setText("");
-					importeTotal.setText("");
+					// creacion del objeto albaran
 			
-					if (JOptionPane.showConfirmDialog(mainFrame, "¿Desea generar un pdf del albarán?", "Impresión de albarán", JOptionPane.YES_NO_OPTION)==0) {
-						String[] cliente=clienteFac.getCustomer(datosF.getCodeCustomer());
-						if (dataList.getDelivery("albaran"+datosF.getNumber(), datosF, cliente[2], cliente[3], cliente[4], cliente[5], cliente[6])) {
-							JOptionPane.showMessageDialog(mainFrame, "Generado el pdf del albarán","Impresión de albarán",JOptionPane.INFORMATION_MESSAGE);
-						} else {
-							JOptionPane.showMessageDialog(mainFrame, "Error: no ha sido posible generar el pdf","Impresión de albarán",JOptionPane.ERROR_MESSAGE);
-						}
+					datosF.setInvoice("");
+					datosF.setCodeCustomer(selectedCustomer);
+					String numbIv=numberCustomerInv.getText().trim();
+					datosF.setNumber(numbIv);
+					String dateToRecord=dateCustomerInv.getText().trim().substring(6)+dateCustomerInv.getText().trim().substring(2,6)+dateCustomerInv.getText().trim().substring(0,2);
+					datosF.setDateOper(Date.valueOf(dateToRecord));
+					datosF.setCodeCompany(SpringFacturacion.idCompany);
+					
+					datosF.setCodeOper1("");
+					datosF.setCodeOper2("");
+					datosF.setCodeOper3("");
+					datosF.setTextOper1("");
+					datosF.setTextOper2("");
+					datosF.setTextOper3("");
+					
+					switch (datosAlb.size()) {
+					case 3:
+						datosF.setCodeOper3(datosAlb.get(2)[0]);
+						datosF.setTextOper3(datosAlb.get(2)[1]);
+						datosF.setQttOper3(convertToNumber(datosAlb.get(2)[2]));
+						datosF.setPriceOper3(convertToNumber(datosAlb.get(2)[3]));
+						datosF.setIvaOper3(convertToNumber(datosAlb.get(2)[4]));
+					case 2:
+						datosF.setCodeOper2(datosAlb.get(1)[0]);
+						datosF.setTextOper2(datosAlb.get(1)[1]);
+						datosF.setQttOper2(convertToNumber(datosAlb.get(1)[2]));
+						datosF.setPriceOper2(convertToNumber(datosAlb.get(1)[3]));
+						datosF.setIvaOper2(convertToNumber(datosAlb.get(1)[4]));
+					case 1:
+						datosF.setCodeOper1(datosAlb.get(0)[0]);
+						datosF.setTextOper1(datosAlb.get(0)[1]);
+						datosF.setQttOper1(convertToNumber(datosAlb.get(0)[2]));
+						datosF.setPriceOper1(convertToNumber(datosAlb.get(0)[3]));
+						datosF.setIvaOper1(convertToNumber(datosAlb.get(0)[4]));
+						break;
+						default:
+							break;		
 					}
-			
 					
-					// se actualizan pestañas
-					reinicia.reinicia(3,1);
+					// los valores han sido calculados en calculaBase
+					datosF.setBaseImponible0(base0);
+					datosF.setBaseImponible1(base1);
+					datosF.setIva1(cuota1);
+					datosF.setTipoIva1(tipoIva1);
+					datosF.setBaseImponible2(base2);
+					datosF.setIva2(cuota2);
+					datosF.setTipoIva2(tipoIva2);
+					datosF.setBaseImponible3(base3);
+					datosF.setIva3(cuota3);
+					datosF.setTipoIva3(tipoIva3);
+					datosF.setRetencion(retencI);
+					datosF.setTipoRet(SpringFacturacion.retInvoices);
+					datosF.setTotalAlbaran(baseI+cuotaI-retencI);
 					
-				} else {
-					JOptionPane.showMessageDialog(mainFrame, "Error en grabación de albarán","Grabación de albaranes",JOptionPane.ERROR_MESSAGE);
+					
+					// grabando el albaran
+					
+					if (albaranes.createDelivery(datosF)) {
+						JOptionPane.showMessageDialog(mainFrame, "Albarán grabado correctamente","Grabación de albaranes",JOptionPane.INFORMATION_MESSAGE);
+					
+						nextNumber=formatoFactura.format(albaranes.getNextNumber());
+						numberCustomerInv.setText(nextNumber);
+						
+						// eliminando la lista
+						datosAlb=new ArrayList<String[]>();
+						
+						// Eliminando la parte grafica
+						selCustomerInv.setSelectedIndex(0);
+						nameCustomerInv.setText("");
+						
+						numberOp.setSelectedIndex(0);
+						textOp.setText("");
+						qttOp.setText("");
+						priceOp.setText("");
+						ivaOp.setSelectedIndex(0);
+						amountOp.setText("");
+						
+						cod1.setText("");
+						tex1.setText("");
+						ud1.setText("");
+						price1.setText("");
+						iva1.setText("");
+						imp1.setText("");
+						cod2.setText("");
+						tex2.setText("");
+						ud2.setText("");
+						price2.setText("");
+						iva2.setText("");
+						imp2.setText("");
+						cod3.setText("");
+						tex3.setText("");
+						ud3.setText("");
+						price3.setText("");
+						iva3.setText("");
+						imp3.setText("");
+						
+						baseImp.setText("");
+						cuotaIva.setText("");
+						importeTotal.setText("");
+				
+						if (JOptionPane.showConfirmDialog(mainFrame, "¿Desea generar un pdf del albarán?", "Impresión de albarán", JOptionPane.YES_NO_OPTION)==0) {
+							String[] cliente=clienteFac.getCustomer(datosF.getCodeCustomer());
+							if (dataList.getDelivery("albaran"+datosF.getNumber(), datosF, cliente[2], cliente[3], cliente[4], cliente[5], cliente[6])) {
+								JOptionPane.showMessageDialog(mainFrame, "Generado el pdf del albarán","Impresión de albarán",JOptionPane.INFORMATION_MESSAGE);
+							} else {
+								JOptionPane.showMessageDialog(mainFrame, "Error: no ha sido posible generar el pdf","Impresión de albarán",JOptionPane.ERROR_MESSAGE);
+							}
+						}
+				
+						
+						// se actualizan pestañas
+						reinicia.reinicia(3,1);
+						
+					} else {
+						JOptionPane.showMessageDialog(mainFrame, "Error en grabación de albarán","Grabación de albaranes",JOptionPane.ERROR_MESSAGE);
+					}
 				}
-			}		
+			} else {
+				JOptionPane.showMessageDialog(mainFrame, "Error en datos a grabar", "Error en Albarán", JOptionPane.ERROR_MESSAGE);
+			}
+			
+
+					
 		}	 //END OF GRABAR ALBARAN		
 		
 		

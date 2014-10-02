@@ -40,9 +40,6 @@ public class SpringFacturacion implements Runnable {
 	 */
 	
 	public static void main(String[] args) {
-
-		//fondoColor=new Color(238,238,238);
-		
 		
 		@SuppressWarnings("resource")
 		ApplicationContext context2=new ClassPathXmlApplicationContext("main/applicationContext.xml");

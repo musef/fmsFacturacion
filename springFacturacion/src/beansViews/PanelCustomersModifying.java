@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -131,7 +132,10 @@ public class PanelCustomersModifying implements ActionListener, ItemListener {
 		nameSelect2=new JComboBox<String>();
 		nameSelect2.addItem("Seleccione... ");
 		listCustomers=listCustomers();	
-		for (String[] list:listCustomers) {
+		if (listCustomers==null) {
+			listCustomers=new ArrayList<String[]>();
+		}
+		for (String[] list:listCustomers) {		
 			nameSelect2.addItem(list[2]);
 		}
 		
@@ -166,7 +170,8 @@ public class PanelCustomersModifying implements ActionListener, ItemListener {
 		nifF2.setToolTipText("OBLIGATORIO: 9 caracteres");
 		//pagos=new PagosBean();
 		if ((custPagos=pagosCust.getListPago())==null) {
-			custPagos.add(new String[5]);
+			custPagos=new ArrayList<String[]>();
+			//custPagos.add(new String[5]);
 		}
 		getPay2=new JComboBox<String>();
 		getPay2.addItem("Seleccione pago");
@@ -339,55 +344,64 @@ public class PanelCustomersModifying implements ActionListener, ItemListener {
 	private boolean checkForm(int select) {
 		
 		boolean result=true;
+			
+		nameF2.setBackground(OKFORM);
+		addressF2.setBackground(OKFORM);
+		cityF2.setBackground(OKFORM);
+		codeF2.setBackground(OKFORM);
+		nifF2.setBackground(OKFORM);
+		payF2.setBackground(OKFORM);
+		taxCodeF2.setBackground(OKFORM);
+		taxAddressF2.setBackground(OKFORM);
+		taxCityF2.setBackground(OKFORM);
 		
 		
-			
-			nameF2.setBackground(OKFORM);
-			addressF2.setBackground(OKFORM);
-			cityF2.setBackground(OKFORM);
-			codeF2.setBackground(OKFORM);
-			nifF2.setBackground(OKFORM);
-			payF2.setBackground(OKFORM);
-			taxCodeF2.setBackground(OKFORM);
-			taxAddressF2.setBackground(OKFORM);
-			taxCityF2.setBackground(OKFORM);
-			
-			if (nameF2.getText().trim().length()<3 || nameF2.getText().trim().length()>50) {
-				nameF2.setBackground(ERRORFORM);
-				result=false;
-			}
-			if (addressF2.getText().trim().length()>50) {
-				addressF2.setBackground(ERRORFORM);
-				result=false;
-			}
-			if (cityF2.getText().trim().length()>50) {
-				cityF2.setBackground(ERRORFORM);
-				result=false;
-			}
-			if (codeF2.getText().trim().length()!=5) {
-				codeF2.setBackground(ERRORFORM);
-				result=false;
-			}
-			if (nifF2.getText().trim().length()!=9) {
-				nifF2.setBackground(ERRORFORM);
-				result=false;
-			}
-			if (payF2.getText().trim().length()>50) {
-				payF2.setBackground(ERRORFORM);
-				result=false;
-			}
-			if (checkTax2.isSelected() && taxCodeF2.getText().trim().length()!=5) {
-				taxCodeF2.setBackground(ERRORFORM);
-				result=false;
-			}
-			if (checkTax2.isSelected() && taxCityF2.getText().trim().length()>50) {
-				taxCityF2.setBackground(ERRORFORM);
-				result=false;
-			}
-			if (checkTax2.isSelected() && taxAddressF2.getText().trim().length()>50) {
-				taxAddressF2.setBackground(ERRORFORM);
-				result=false;
-			}
+		if (nameSelect2.getSelectedIndex()==0) {
+			nameF2.setBackground(ERRORFORM);
+			addressF2.setBackground(ERRORFORM);
+			cityF2.setBackground(ERRORFORM);
+			codeF2.setBackground(ERRORFORM);
+			nifF2.setBackground(ERRORFORM);
+			payF2.setBackground(ERRORFORM);
+			return false;
+		}
+		
+		if (nameF2.getText().trim().length()<3 || nameF2.getText().trim().length()>50) {
+			nameF2.setBackground(ERRORFORM);
+			result=false;
+		}
+		if (addressF2.getText().trim().length()>50) {
+			addressF2.setBackground(ERRORFORM);
+			result=false;
+		}
+		if (cityF2.getText().trim().length()>50) {
+			cityF2.setBackground(ERRORFORM);
+			result=false;
+		}
+		if (codeF2.getText().trim().length()!=5) {
+			codeF2.setBackground(ERRORFORM);
+			result=false;
+		}
+		if (nifF2.getText().trim().length()!=9) {
+			nifF2.setBackground(ERRORFORM);
+			result=false;
+		}
+		if (payF2.getText().trim().length()>50) {
+			payF2.setBackground(ERRORFORM);
+			result=false;
+		}
+		if (checkTax2.isSelected() && taxCodeF2.getText().trim().length()!=5) {
+			taxCodeF2.setBackground(ERRORFORM);
+			result=false;
+		}
+		if (checkTax2.isSelected() && taxCityF2.getText().trim().length()>50) {
+			taxCityF2.setBackground(ERRORFORM);
+			result=false;
+		}
+		if (checkTax2.isSelected() && taxAddressF2.getText().trim().length()>50) {
+			taxAddressF2.setBackground(ERRORFORM);
+			result=false;
+		}
 			
 	
 		return result;
@@ -471,6 +485,7 @@ public class PanelCustomersModifying implements ActionListener, ItemListener {
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
+		
 		if (checkTax2!=null && checkTax2.isSelected()) {
 			taxAddressF2.setEditable(true);
 			taxCodeF2.setEditable(true);

@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -128,6 +129,9 @@ public class PanelDeliveryPDF implements ActionListener, ItemListener {
 		firstDelivery=new JComboBox<String>();
 		firstDelivery.addItem("Elija albarán");
 		listDeliveries=albaranes.searchAllDeliveries();
+		if (listDeliveries==null) {
+			listDeliveries=new ArrayList<String[]>();
+		}
 		for (String[] list:listDeliveries) {
 			firstDelivery.addItem(list[3]);
 		}
@@ -135,7 +139,7 @@ public class PanelDeliveryPDF implements ActionListener, ItemListener {
 		
 		lastDelivery=new JComboBox<String>();
 		lastDelivery.addItem("Elija albarán");
-		listDeliveries=albaranes.searchAllDeliveries();
+		//listDeliveries=albaranes.searchAllDeliveries();
 		for (String[] list:listDeliveries) {
 			lastDelivery.addItem(list[3]);
 		}
@@ -409,7 +413,7 @@ public class PanelDeliveryPDF implements ActionListener, ItemListener {
 		panelText.add(hText);
 		
 		JPanel title=new JPanel();
-		title.add(new JLabel("AYUDA DE GENERACIÓN DE FACTURAS"));
+		title.add(new JLabel("AYUDA DE GENERACIÓN DE ALBARANES"));
 		
 		panelHelp.add(title,BorderLayout.NORTH);
 		panelHelp.add(panelText,BorderLayout.CENTER);

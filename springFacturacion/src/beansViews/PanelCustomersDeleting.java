@@ -110,7 +110,9 @@ public class PanelCustomersDeleting implements ActionListener, ItemListener {
 		nameSelect3=new JComboBox<String>();
 		nameSelect3.addItem("Seleccione... ");
 		listCustomers=listCustomers();
-		
+		if (listCustomers==null) {
+			listCustomers=new ArrayList<String[]>();
+		}
 		for (String[] list:listCustomers) {
 			nameSelect3.addItem(list[2]);
 		}

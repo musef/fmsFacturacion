@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -66,6 +67,8 @@ public class PanelAdminPagos implements ActionListener, ItemListener {
 	private Font font1=new Font("SansSerif", Font.BOLD, 20);
 	private Font font2=new Font("SansSerif", Font.BOLD, 16);
 	private Color colorL=Color.BLACK;
+	private final Color ERRORFORM=Color.RED;
+	private final Color OKFORM=Color.WHITE;
 	
 	
 	
@@ -119,7 +122,8 @@ public class PanelAdminPagos implements ActionListener, ItemListener {
 		selPago.addItem("Seleccione...");
 		//pagos=new PagosBean();
 		if ((allPagos=pagos.getListPago())==null) {
-			allPagos.add(new String[5]);
+			allPagos=new ArrayList<String[]>();
+			//allPagos.add(new String[5]);
 		}
 		for (String[] data: allPagos) {
 			selPago.addItem(data[1]);
@@ -256,6 +260,74 @@ public class PanelAdminPagos implements ActionListener, ItemListener {
 		return marco2;
 				
 	} // end of method pagoPanel
+
+	
+	
+	/**
+	 * Este metodo chequea el formulario y devuelve un false algun campo esta erroneo y faltan datos
+	 * para rellenar. A su vez, resalta en rojo el campo erroneo.
+	 * @return Boolean, TRUE o FALSE según el formulario esté correcto o contenga errores.
+	 */
+	
+	private boolean checkForm() {
+	
+		boolean result=true;
+		
+		namePago.setBackground(OKFORM);
+		textoPago.setBackground(OKFORM);
+		diasPago.setBackground(OKFORM);
+		fechaPago.setBackground(OKFORM);
+		
+		if (namePago.getText().trim().length()<3 || namePago.getText().trim().length()>50) {
+			namePago.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		if (textoPago.getText().trim().length()<3 || textoPago.getText().trim().length()>50) {
+			textoPago.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		if (diasPago.getText().trim().length()>3) {
+			diasPago.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		if (diasPago.getText().trim().isEmpty()) {
+			diasPago.setText("0");
+		}
+		
+		@SuppressWarnings("unused")
+		long diaF=0;
+		try {
+			diaF=(long)Long.parseLong(diasPago.getText().trim());
+		} catch (NumberFormatException nf) {
+			diasPago.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		
+		if (fechaPago.getText().trim().length()>2) {
+			fechaPago.setBackground(ERRORFORM);
+			result=false;
+		}
+		
+		@SuppressWarnings("unused")
+		long fechaF=0;
+		try {
+			String dia=diasPago.getText().trim();
+			if (dia.isEmpty()) {
+				dia="0";
+			}
+			fechaF=(long)Long.parseLong(dia);
+		} catch (NumberFormatException nf) {
+			diasPago.setBackground(ERRORFORM);
+			result=false;
+		}
+
+		return result;
+	}  // end of checkForm
+
 	
 	
 	/**
@@ -349,42 +421,52 @@ public class PanelAdminPagos implements ActionListener, ItemListener {
 		
 		if (source.equals("Grabar pago") && selPago.getSelectedIndex()==0 ) {
 			//FormaPago newPago=new FormaPago();
-			
-			newPago.setNamePago(namePago.getText().trim());
-			newPago.setTextoPago(textoPago.getText().trim());
-			newPago.setDiasPago(diasPago.getText().trim());
-			newPago.setFechaPago(fechaPago.getText().trim());
+			if (checkForm()) {
+				newPago.setNamePago(namePago.getText().trim());
+				newPago.setTextoPago(textoPago.getText().trim());
+				newPago.setDiasPago(diasPago.getText().trim());
+				newPago.setFechaPago(fechaPago.getText().trim());
 
-			if (pagos.createPago(newPago)) {
-				// muestra mensaje y actualiza las pestañas
-				JOptionPane.showMessageDialog(mainFrame, "La forma de pago ha sido grabada correctamente", "Grabación de Formas de pago", JOptionPane.INFORMATION_MESSAGE);
-				reinicia.reinicia(1,3);
+				if (pagos.createPago(newPago)) {
+					// muestra mensaje y actualiza las pestañas
+					JOptionPane.showMessageDialog(mainFrame, "La forma de pago ha sido grabada correctamente", "Grabación de Formas de pago", JOptionPane.INFORMATION_MESSAGE);
+					reinicia.reinicia(1,3);
+				} else {
+					JOptionPane.showMessageDialog(mainFrame, "Error en la grabación de la forma de pago", "Grabación de Formas de pago", JOptionPane.ERROR_MESSAGE);
+				}
 			} else {
-				JOptionPane.showMessageDialog(mainFrame, "Error en la grabación de la forma de pago", "Grabación de Formas de pago", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(mainFrame, "Faltan datos necesarios para crear el pago\n" +
+						"o hay datos incorrectos en el formulario.", "Grabación de Formas de pago", JOptionPane.ERROR_MESSAGE);
 			}
+
 		}
 
 		if (source.equals("Grabar pago") && selPago.getSelectedIndex()>0 ) {
 			
-			//FormaPago newPago=new FormaPago();
-			idPago=allPagos.get(selPago.getSelectedIndex()-1)[0];
-			try {
-				newPago.setIdPago((long)Long.parseLong(idPago));
-			} catch (NumberFormatException nf) {
-				newPago.setIdPago(0);
-			}			
-			
-			newPago.setNamePago(namePago.getText().trim());
-			newPago.setTextoPago(textoPago.getText().trim());
-			newPago.setDiasPago(diasPago.getText().trim());
-			newPago.setFechaPago(fechaPago.getText().trim());
+			if (checkForm()) {
+				//FormaPago newPago=new FormaPago();
+				idPago=allPagos.get(selPago.getSelectedIndex()-1)[0];
+				try {
+					newPago.setIdPago((long)Long.parseLong(idPago));
+				} catch (NumberFormatException nf) {
+					newPago.setIdPago(0);
+				}			
+				
+				newPago.setNamePago(namePago.getText().trim());
+				newPago.setTextoPago(textoPago.getText().trim());
+				newPago.setDiasPago(diasPago.getText().trim());
+				newPago.setFechaPago(fechaPago.getText().trim());
 
-			if (pagos.modifyPago(idPago, newPago)) {
-				// muestra mensaje y actualiza las pestañas
-				JOptionPane.showMessageDialog(mainFrame, "La forma de pago ha sido modificada correctamente", "Modificación de Formas de pago", JOptionPane.INFORMATION_MESSAGE);
-				reinicia.reinicia(1,3);
+				if (pagos.modifyPago(idPago, newPago)) {
+					// muestra mensaje y actualiza las pestañas
+					JOptionPane.showMessageDialog(mainFrame, "La forma de pago ha sido modificada correctamente", "Modificación de Formas de pago", JOptionPane.INFORMATION_MESSAGE);
+					reinicia.reinicia(1,3);
+				} else {
+					JOptionPane.showMessageDialog(mainFrame, "Error en la modificación de Formas de pago", "Modificación de Formas de pago", JOptionPane.ERROR_MESSAGE);
+				}
 			} else {
-				JOptionPane.showMessageDialog(mainFrame, "Error en la modificación de Formas de pago", "Modificación de Formas de pago", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(mainFrame, "Faltan datos necesarios para modificar el pago\n" +
+						"o hay datos incorrectos en el formulario.", "Modificación de Formas de pago", JOptionPane.ERROR_MESSAGE);
 			}
 		}		
 		
